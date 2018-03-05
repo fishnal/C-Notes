@@ -21,6 +21,7 @@
 	+ [Conditional Expressions](#clang-condtls)
 	+ [Loops](#clang-loops)
 	+ [Pointers](#clang-ptrs)
+		+ [Pointer Arithmetic](#clang-ptrs-arithmetic)
 	+ [Dynamic Memory Allocation](#clang-dynamicmem)
 		+ [Stack](#clang-dynamicmem-stack)
 		+ [Heap](#clang-dynamicmem-heap)
@@ -170,7 +171,7 @@ This isn't used in most of our compilations, but it's important to know:
 		```c
 		#include <stdio.h>
 		#define MULTIPLE() printf("HELLO\n"); \
-			printf("HELLO AGAIN\N");
+			printf("HELLO AGAIN\n");
 		
 		int main() {
 		  MULTIPLE();
@@ -334,10 +335,9 @@ int **ptr4; /* pointer to pointer to integer */
 ```
 We can *dereference* a pointer by using the asterisk (`*`) again. For example, if we wanted to dereference `ptr`, we simply do `*ptr` (don't try this yet, keep on reading).
 
-In the above example, ALL the pointers have not been initialized, otherwise known as *null pointers*.
-Attempting to dereference any of them will result in a segmentation fault (seg-fault) because the program tries to derefence the memory address `0` (which is pretty much never allowed by any operating system). That means if we tried to `*ptr`, we get a seg-fault.
+In the above example, ALL the pointers have not been initialized. Attempting to dereference any of them is not exactly a good idea, and results in undefined behavior.
 
-So how do we fix that? Simple, just assign a memory address location to that null pointer. This can be done in a variety of ways: use `malloc`, `calloc`, or get the address of another appropriate variable (known as *referencing*). We can reference an address by using the "address-of" unary operator (`&`), as shown below:
+So how do we fix that? Simple, just assign a memory address location to that pointer. This can be done in a variety of ways: use `malloc`, `calloc`, or get the address of another appropriate variable (known as *referencing*). We can reference an address by using the "address-of" unary operator (`&`), as shown below:
 ```c
 int x = 10, y = 50;
 int *ptr = &x; /* points to address of x */
@@ -345,7 +345,7 @@ const int *ptr2 = &x; /* points to address of x, but cannot change value that pt
 int *const ptr3 = &x; /* points to address of x, but now we cannot change the address that ptr3 points to */
 int **ptr4;
 
-/* some extra confusing stuff :) */
+/* some extra stuff */
 *ptr = 20;
 
 ptr4 = &ptr3;
@@ -353,19 +353,26 @@ ptr4 = &ptr3;
 ```
 Ok so those last few lines in the example above are some important things to take note of. 
 
-`*ptr = 20` will change the value of `x` to 20, which also effectively changes `*ptr2` and `*ptr3` to `20` because they both point to the address of `x`. We can have the compiler warn us when do we such a thing (because we really don't want `*ptr2` to change since we made `ptr2` point to a constant integer). We can simply make `x` a `const int`. This will not *stop* us, but the compiler will *warn* us saying "Hey, you could possibly change the value of `x`, a constant integer, by reassigning `*ptr`!"
+`*ptr = 20` will change the value of `x` to 20, which also effectively changes `*ptr2` and `*ptr3` to `20` because they both point to the address of `x`. We can have the compiler stop us when do we such a thing if we really don't want `*ptr2` to change since we made `ptr2` point to a constant integer. We can simply make `x` a `const int`. The compiler will stop us saying "Hey, you could possibly change the value of `x`, a constant integer, by reassigning `*ptr`!" (this error stems from the `-pedantic-errors` flag)
 
-`ptr4 = &ptr3; *ptr4 = &y;` looks more daunting but it's actually somewhat similar to the above scenario. In this scenario, however, the compiler will stop us and spit out an error. This is because `ptr4 = &ptr3` discards the idea that `ptr3` is a constant pointer. If we this went through execution, we could now change what `ptr3` points to, which is not what we want to happen at all. What we could do to change this is declare `ptr4` as a pointer to a constant pointer to an integer, or `int *const *ptr4` in C code. So now we can do `ptr4 = &ptr3`, but not `*ptr4 = &y` because that'll be changing the pointer that `ptr4` points to, which is intended to be constant.
+`ptr4 = &ptr3; *ptr4 = &y;` looks more daunting but it's actually somewhat similar to the above scenario. In this scenario, the compiler will stop us and spit out an error. This is because `ptr4 = &ptr3` discards the idea that `ptr3` is a constant pointer. If we this went through execution, we could now change what `ptr3` points to, which is not what we want to happen at all. What we could do to change this is declare `ptr4` as a pointer to a constant pointer to an integer, or `int *const *ptr4` in C code. So now we can do `ptr4 = &ptr3`, but not `*ptr4 = &y` because that'll be changing the pointer that `ptr4` points to, which is intended to be constant.
 
-Simiarly, if `x` were a `const int`, then `int *ptr = &x` and `int *const ptr3 = &x` are not allowed (compiler will throw an error about those specifically). That's because both `ptr` and `ptr3` never made a promise to keep the value of the integer they're pointing constant. DO NOT confuse `ptr3` as a pointer to a constant integer, that is `ptr2`. `ptr3` has a constant pointer, but the value of the integer it's pointing to can be change via `*ptr3`.
-
-There's also *pointer arithmetic*, which explains how adding numbers with memory addresses works. For example, say we have `int *ptr` that points to address `0x04`. Assuming the size of an `int` is 4 bytes, performing `*(ptr + 1)` will get the integer value at the memory address `0x08`. But didn't we just add 1 to `ptr`, so why isn't the referenced address `0x05`? Because the `+1` indicates to move forward `1*sizeof(int)` bytes in memory. So we advanced `0x04` 4 bytes foward to get `0x08`. The generalized way of viewing this is that `<data type> *ptr` will advance `n * sizeof(<data type>)` bytes ahead in memory when doing pointer arithmetic (`n` is some arbitrary amount).
+Simiarly, if `x` were a `const int`, then `int *ptr = &x` and `int *const ptr3 = &x` are not allowed (compiler will throw an error about those specifically). That's because both `ptr` and `ptr3` never made a promise to keep the value of the integer they're pointing constant. DO NOT confuse `ptr3` as a pointer to a constant integer, that is `ptr2`. `ptr3` has a constant pointer, but the value of the integer it's pointing to can be changed via `*ptr3`.
+#### Pointer Arithmetic <a id="clang-ptrs-arithmetic"></a>
+There's also *pointer arithmetic*, which explains how adding numbers with memory addresses works. For example, say we have `int *ptr` that points to address `0x04`. Assuming the size of an `int` is 4 bytes, performing `*(ptr + 1)` will get the integer value at the memory address `0x08`. But didn't we just add 1 to `ptr`, so why isn't the referenced address `0x05`? Because the `+1` indicates to move forward `1*sizeof(int)` bytes in memory. So we advanced `0x04` 4 bytes foward to get `0x08`. The generalized way of viewing this is that `<data type> *ptr` will advance `n * sizeof(<data type>)` bytes ahead in memory when doing pointer arithmetic (`n` is some arbitrary amount). A shorter way of looking at this is jumping _memory blocks_ rather than the memory addresses themselves.
 ```c
 /* assume sizeof(char) returns 1 */
 char *ptr = ...; /* say it points to 0x04 */
 char c = *(ptr + 1); /* will get char value at 0x04 + 1 -> 0x05 */
+
+int *ptr2 = ...; /* say it points to 0x10 */
+int i = *(ptr2 + 2); /* gets int value at 0x14 assuming int is 4 bytes */
+
+/* this is the difference in the number of blocks, 
+   not the address themselves, so prints 2 */
+printf("%li\n", (ptr2 + 2) - ptr);
 ```
-Also note that `ptr++` is allowed as it is equivalent to `ptr = ptr + 1` (and similarly for `++ptr`, `ptr--`, and `--ptr`).
+Also note that `ptr++` is allowed as it is equivalent to `ptr = ptr + 1`. Also be wary of `*ptr++`, that **does not** increment that value that `ptr` points to; it dereferences `ptr`, and then increments the value of `ptr`. It's equivalent to calling `*(ptr++)`.
 
 
 Important to understand `rvalue` and `lvalue` when dealing with "address-of" operator (`&`) and asterisk modifier (`*`):
@@ -584,14 +591,16 @@ Here are some common input/output functions found in `stdio.h`:
 + `printf(const char *format, ...)` prints a format string to stdout; returns number of characters written
 + `scanf(const char *format, ...)` reads in a format string from stdin; returns number of items in arguments list that were successfully filled/read in
 + `fopen(const char *filename, const char *mode)` opens up a file in a certain mode
-	|Mode|Description|
-	|:-:|:-|
-	|`r`|read|
-	|`w`|overwrite (existing contents discarded; creates file if DNE)|
-	|`a`|append (creates file if DNE)|
-	|`r+`|read/update (opens for update both input and output)
-	|`w+`|overwrite/update (existing contents discarded; creates file if DNE)
-	|`a+`|append/update (creates file if DNE)
+
+  |Mode|Description|
+  |:-:|:-|
+  |`r`|read|
+  |`w`|overwrite (existing contents discarded; creates file if DNE)|
+  |`a`|append (creates file if DNE)|
+  |`r+`|read/update (opens for update both input and output)
+  |`w+`|overwrite/update (existing contents discarded; creates file if DNE)
+  |`a+`|append/update (creates file if DNE)
+
 + `fread(void *ptr, size_t size, size_t count, FILE *stream)` reads `count` elements (each `size` bytes long) from `stream` and stores into `ptr`
 +  `fwrite(void *ptr, size_t size, size_t count, FILE *stream)` same as `fread` but writes to `stream` from `ptr`
 + `fgets(char *str, int num, FILE *stream)` reads at most `num` characters (or until `EOF`) into `str` from `stream`; adds null character
@@ -608,11 +617,19 @@ Buffered I/O can be very efficient because we don't have to constantly make call
 + Each constant is of type `int`
 ```c
 /* A=0, B=1, C=2 */
-enum { A, B, C } enum1; /* can put name after constants */
-/* A=1, B=2, C=3 */
-enum enum2 { A = 1, B, C }; /* can put name directly after `enum` */
-/* A=1, B=2, C=5 */
-enum { A = 1, B, C = 5} enum3;
+enum { A, B, C } enum1; /* enum1 will be a variable of this enumeration */
+/* D=1, E=2, F=3 */
+enum letters { D = 1, E, F }; /* enumerated type of "letters" */
+/* G=1, H=2, I=5 */
+enum { G = 1, H, I = 5} enum3;
+enum letters enum2; /* enum2 is of enumerated type "letters" */
+
+enum1 = A; /* enum1 is effectively 1 */
+enum1 = D; /* enum1 becomes 1, or A, because D=A=1 */
+enum1 = E; /* enum1 becomes 2, or B, because E=B=2 */
+enum3 = A; /* enum3 is 0, can't be any constant from the enumeration it was defined from */
+enum3 = C; /* enum3 is 2, or H */
+enum2 = E; /* enum2 is 2 */
 
 /* using enums as variables */
 enum boolean { false, true };
@@ -764,6 +781,32 @@ wp_ptr = (WP*) malloc(sizeof(WP));
 scanf("%d", &list_size);
 wp_list = (WP*) malloc(list_size * sizeof(WP));
 ```
+Assigning one structure to another is a shallow copy. Say we assign `a` to `b`, both of the same struct type. If we change anything in `b`, it is not reflected in `a`, and vice-versa:
+```c
+struct A {
+  int i;
+  int *ptr;
+}
+
+struct A a = { 0 }, b = { 0 };
+int x = 100, y = 200;
+
+a.i = 10;
+b.i = 20;
+a.ptr = &x;
+b.ptr = &y;
+
+a = b;
+
+/* a.i == b.i is true */
+/* a.ptr == b.ptr is true */
+/* &a == &b is false */
+/* &a.i == &b.i is false */
+/* &a.ptr == &b.ptr is false */
+
+b.i = 30; /* a.i is still 20 */
+b.ptr = &x; /* b.ptr points to x, but a.ptr still points to y */
+```
 ### Unions <a id="clang-union"></a>
 Unions are similar to structures, but have one big difference: the space allocated to both. The size of a structure will be the sum of the size of all it's members. The size of a union, however, will be the largest size of all it's members. Here's an example:
 ```c
@@ -902,6 +945,7 @@ Command line arguments are arguments that you pass in through the command line.
 |`|`|OR|binary|true if one true|
 |`^`|XOR|binary|true if one true and one false|
 |`~`|NOT|unary|true if false|
+
 Do not confuse the bitwise operators for the boolean operators!
 Hexadecimal can easily be converted to binary:
 ```
@@ -973,3 +1017,4 @@ Two's Complement is significant when it comes to signed numbers.
 + Dr. Neil Spring's Lecture Notes
 + [C Syntax - Wikipedia](https://en.wikipedia.org/wiki/C_syntax)
 + [C Programming - Programiz](https://www.programiz.com/c-programming/)
++ [Discussion about array sizes - Reddit](https://www.reddit.com/r/programming/comments/1scchh/the_difference_between_arr_and_arr_how_to_find/cdwjgup/)
