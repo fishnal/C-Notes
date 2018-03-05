@@ -22,6 +22,7 @@
 	+ [Loops](#clang-loops)
 	+ [Pointers](#clang-ptrs)
 		+ [Pointer Arithmetic](#clang-ptrs-arithmetic)
+		+ [void *](#clang-ptrs-void)
 	+ [Dynamic Memory Allocation](#clang-dynamicmem)
 		+ [Stack](#clang-dynamicmem-stack)
 		+ [Heap](#clang-dynamicmem-heap)
@@ -131,6 +132,24 @@ This isn't used in most of our compilations, but it's important to know:
 	+ `float`
 	+ `double` default for symbolic constants
 	+ Remember these have finite precision...
++ Be wary of implicit type conversions: arithmetic operators require operands to be of same type!
+	+ As such, there's a heiarchy of types:
+		+ Floating-precision over integer-precision
+		+ Wide over small
+		+ Unsigned over signed	
+	```c
+	float f = 5.02;
+	int i = 100;
+
+	printf("%d\n", (int) f); /* 5 */
+	printf("%f\n", (int) f); /* 0, compiler warns */
+	printf("%f\n", i * f); /* roughly 502.0000 */
+	/* takes the bytes in f and computes them as an integer, rather
+	   than a float (in other words, it's not going to truncate
+	   the float and them use that truncation as the integer to
+	   print */
+	printf("%d\n", f);
+	```
 ### Operators <a id="clang-ops"></a>
 + `+`, `-`, `*`, `/`, `%`
 + `=`, `+=`, `-=`, `*=`, `/=`, `%=`
@@ -376,8 +395,23 @@ Also note that `ptr++` is allowed as it is equivalent to `ptr = ptr + 1`. Also b
 
 
 Important to understand `rvalue` and `lvalue` when dealing with "address-of" operator (`&`) and asterisk modifier (`*`):
-+ `rvalue` refers to data value stored some memory address; can't have value assigned to it, which means can only appear on right side of assignment operator (think of right-value)
-+ `lvalue` means locator-value and refers to expressions that locate/designate objects; can appear on left or right side of assignment operator (`=`) (think of left-value)
++ `rvalue` refers to data value; can't have value assigned to it, which means can only appear on right side of assignment operator (think of right-value)
++ `lvalue` refers to a place/location where we can store a value; appears on left side of assignment operator (think of left-value).
+#### void * <a id="clang-ptrs-void"></a>
+A void pointer (`void *`) is a sort of "generic" pointer type. It can be converted to any other type without an explicit cast. But, you can't do dereference it or do pointer arithmetic with it; first cast it to a specific type then have your fun with it.
+```c
+void foo(void * void_ptr) {
+  /* print memory address */
+  printf("%p\n", void_ptr);
+}
+
+int *ptr = malloc(sizeof(int));
+int **ptr2 = malloc(sizeof(int) * sizeof(int));
+
+foo(ptr);
+foo(ptr2); /* (int **) is a pointer to an (int *), so this is valid! */
+```
+Just a heads up, void pointers are **not** valid for [function pointers](#clang-func-ptr)!
 ### Dynamic Memory Allocation <a id="clang-dynamicmem"></a>
 There are two things we need to understand before we engage in dynamic memory: the *stack* and *heap*.
 #### Stack <a id="clang-dynamicmem-stack"></a>
@@ -590,6 +624,13 @@ Read up on format strings for both [input](http://www.cplusplus.com/reference/cs
 Here are some common input/output functions found in `stdio.h`:
 + `printf(const char *format, ...)` prints a format string to stdout; returns number of characters written
 + `scanf(const char *format, ...)` reads in a format string from stdin; returns number of items in arguments list that were successfully filled/read in
+	+ If `scanf` encounters an invalid input (say it was expecting a number but got a character/letter), then it stops reading.
+	```c
+	int a = 200;
+	char c = 'f';
+	scanf("%d %c", &a, &c); /* say we input "a b" (w/o quotes) */
+	printf("%d %c\n", a, c); /* prints "200 f" */
+	```
 + `fopen(const char *filename, const char *mode)` opens up a file in a certain mode
 
   |Mode|Description|
@@ -810,28 +851,26 @@ b.ptr = &x; /* b.ptr points to x, but a.ptr still points to y */
 ### Unions <a id="clang-union"></a>
 Unions are similar to structures, but have one big difference: the space allocated to both. The size of a structure will be the sum of the size of all it's members. The size of a union, however, will be the largest size of all it's members. Here's an example:
 ```c
-union UnionStructure {
-	char name[20];
-	int age;
-} us;
+union Union {
+  char name[20];
+  int age;
+  int age2;
+} u;
 
-struct PersonStructure {
-	char name[20];
-	int age;
-} ps;
+struct Structure {
+  char name[20];
+  int age;
+  int age2;
+} p;
 
 /* both are essentially same thing logically */
-printf("%d\n", sizeof(us)); /* 20 */
-printf("%d\n", sizeof(ps)); /* 24 */
+printf("%d\n", sizeof(u)); /* 20 */
+printf("%d\n", sizeof(p)); /* 28 */
 ```
-This happens because unions can access only one of its members at a time; the rest will hold garbage values. This contrasts with structures, which can access all of its members at any given time.
+This happens because unions can access only one of its members at a time, whereas structures can access any of its members at any time. Hence why the size of the union here is 20 bytes, or the largest size among all its members (the size of `name`):
 ```c
-strcpy(us.name, "HELLO");
-printf("%s\n", us.name); /* HELLO */
-printf("%d\n", us.age); /* garbage */
-us.age = 10;
-printf("%s\n", us.name); /* garbage characters */
-printf("%d\n", us.age); /* 10 */
+strcpy(u.name, "HELLO");
+/* u.name is HELLO, u.age is 
 ```
 ### Functions <a id="clang-func"></a>
 Functions in C are compiled linearly. That means you can't call a function if you haven't defined it before that line.
@@ -889,7 +928,22 @@ int main() {
   return 0;
 }
 ```
-Function pointers also exist, which are simply just pointers to a function:
+There's a small caveat when it comes to function parameters:
+```c
+void foo() { ... }
+foo(); /* ok! */
+foo(20); /* ok! */
+```
+and
+```c
+void foo(void) { ... }
+foo(); /* ok! */
+foo(20); /* not so ok... */
+```
+are different functions.
+The former can take an arbitrary amount of arguments, while the latter will take 0 arguments (this helps explain [command line arguments](#clang-cla)).
+#### Function Pointers <a id="#clang-func-ptr"></a>
+Function pointers are simply just pointers to a function:
 ```c
 int add(int a, int b) {
   return a + b;
@@ -932,11 +986,75 @@ two_int_func add_func = &add;
 
 printf("%d\n", use_func_ptr(add_func, 2, 3)); /* 5 */
 ```
+As noted when discussing `void *`, function pointers cannot be cast to a `void *`:
+```c
+void foo() {
+  printf("I'm foo!\n");
+}
+
+/* Don't get confused, pointing to a void function is perfectly fine.
+   Casting any function pointer to void *, however, isn't. */
+void (*foo_func_ptr)() = &foo;
+
+printf("%p\n", (void *) foo_func_ptr); /* NOT ALLOWED */
+```
+
 Function pointers are useful when sorting a list. Take, for example, a function that needs to sort a list of arbitrary objects. These objects could be integers, strings, or even some random struct that no sane person would think of designing. A generalized sorting function (say one that implements the selection sort algorithm) can't predict every kind of object it needs to be able to sort (hence why its *generalized*). It should only need to worry about determining when an object is greater than, less than, or equal to another object. So in order to generalize this sorting function, it takes in a function pointer that acts as the comparator.
 ### Linkage <a id="clang-linkage"></a>
+Recall:
++ A symbol is a named variable of function.
++ The use of `extern` and `static` scoping.
+
+Linking takes symbols that are referencing in one object file/library, and resolves them with a symbol defined in another object file/library. `static` and `extern` matters when you combine multiple `.c` files.
+
+Linkers, the programs responsible for linking, take machine code files as input and produces an executable object code
++ Machine code, or object, files usually end in `.o`
++ Exectable object code end in `a.out` by default from `gcc`, but the name of the executable file can be changed by using the `-o` flag.
+
+For functions and global variables, `static` will indicate that the symbol should not be exported to other files. `extern` is the opposite in that someone can find that symbol elsewhere (if it were declared) or the symbol will be exported elsewhere (if it's being defined).
 ### Command Line Arguments <a id="clang-cla"></a>
-Command line arguments are arguments that you pass in through the command line.
-### Recursion <a id="clang-recursion"></a>
+Command line arguments (CLAs) are arguments that you pass in through the command line. These are specified in the `main` function that we typically write. However, we don't need to define `main` to take CLAs if we don't care about them. This is simplified to `int main() { ... }`.
+
+If we wanted to incorporate CLAs into our program, we add two parameters to our `main` function:
+```c
+int main(int argc, int *argv[]) { ... }
+```
++ `argc` is the number of arguments that were passed in via the command line
++ `argv` is the value of the argument that were passed in via the command line.
+### Recursion <a id="clang-recursion"></a> **[needs to be peer reviewed]**
+There isn't anything unique or special to recursion in C. But there are some properties of C that you can take advantage of:
++ Local `static` variables can be useful in recursive functions as it can remove the need for a helper function:
+	```c
+	/* poor implementation of a recursive factorial function */
+	int fac(int i) {
+	  static int prod = 1;
+
+	  if (i > 1) {
+		  prod *= i;
+	  }
+
+	  fac(i - 1);
+
+	  return prod;
+	}
+
+	printf("%d\n", fac(4)); /* 24 */
+	```
++ C supports tail recursion. That means if your recursive call is at the end of a function, C won't allocate a new stack frame for the call; it'll just reuse the current one. This makes it more memory efficient:
+	```c
+	void tail_recurse(int i) {
+		if (i > 0) {
+			printf("%d\n", i);
+			tail_recurse(i - 1);
+		}
+	}
+
+	tail_recurse(5); /* prints 5 4 3 2 1 */
+
+	/* You can use gdb (look at the debuggers for more info) to verify
+	   that the same stack frame is used for each recursive call made for
+	   tail_recurse(int) */
+	```
 ## Memory Maps <a id="memmap"></a>
 ## Bitwise Operators <a id="bitwiseops"></a>
 |Operator|Name|Type|Description|Example|
