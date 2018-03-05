@@ -7,15 +7,16 @@
 	+ [rm](#unix-rm)
 	+ [mv](#unix-mv)
 	+ [diff](#unix-diff)
+	+ [touch](#unix-touch)
 	+ [gcc](#unix-gcc)
 + [C Specifics](#clang)
 	+ [General Info](#clang-info)
 	+ [Data Types](#clang-datatypes)
 	+ [Operators](#clang-ops)
 	+ [Preprocessor](#clang-preproc)
-		+ [#include](#clang-prepoc-include)
-		+ [#define](#clang-prepoc-define)
-		+ [#ifdef](#clang-prepoc-ifdef)
+		+ [\#include](#clang-preproc-include)
+		+ [\#define](#clang-preproc-define)
+		+ [\#ifdef](#clang-preproc-ifdef)
 	+ [Keywords](#clang-kws)
 	+ [Expresions](#clang-expr)
 	+ [Conditional Expressions](#clang-condtls)
@@ -79,6 +80,11 @@
 	+ Usage: `diff [opts] <FILE1/DIR1> <FILE2/DIR1>`
 	+ `-bwi` ignores whitespaces, but not empty lines
 	+ `-Bwi` ignores whitespaces and empty lines
++ `touch` <a id="unix-touch"></a> changes the timestamp on a file
+	+ Usage: `touch [opts] <FILE>`
+	+ If used on existing file, file's timestamp changed to now
+	+ If used on non-existing file, creates that file
+	+ `-c|--no-create` does not create a file
 + `gcc` <a id="unix-gcc"></a> compiles C/C++ files
 	+ Usage: `gcc [opts] <FILES>`
 	+ `-c` compiles but does not link (output file ends with `.o`)
