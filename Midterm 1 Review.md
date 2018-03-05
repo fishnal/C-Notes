@@ -42,7 +42,6 @@
 + [Memory Maps](#memmap)
 + [Bitwise Operators](#bitwiseops)
 	+ [One's and Two's Complement](#bitwiseops-complements)
-+ [Makefiles](#makefile)
 + [Debuggers](#debug)
 	+ [gdb](#debug-gdb)
 	+ [valgrind](#debug-valgrind)
@@ -1062,6 +1061,14 @@ There isn't anything unique or special to recursion in C. But there are some pro
 	   tail_recurse(int) */
 	```
 ## Memory Maps <a id="memmap"></a>
+Don't really know how to explain memory maps, so uh, just refer to [this example](http://www.cs.umd.edu/class/spring2018/cmsc216/exams/exam1/MemoryMapExample.pdf).
+Tips:
++ Be wary of pointers and what they point to (to be honest would just triple check them).
++ Parameters are passed in to functions by value, not reference.
++ If you have an uninitialized value, indicate that it's garbage.
++ Start drawing your memory map from the very first executed statement and update values/add variables as you step through the code.
++ Indicate when you have `NULL` values either with `NULL` or the ground symbol.
++ Take up all the space you need; the more space you have for your memory map, the more cleaner your map can look.
 ## Bitwise Operators <a id="bitwiseops"></a>
 |Operator|Name|Type|Description|Example|
 |:-:|:-:|:-:|:-|:-|
@@ -1097,7 +1104,6 @@ Two's Complement is just taking the One's Complement of a number and adding 1 to
 + i.e. 1101 -> 0010 + 1 -> 0010
 
 Two's Complement is significant when it comes to signed numbers.
-## Makefiles <a id="makefile"></a>
 ## Debuggers <a id="debug"></a>
 ### gdb <a id="debug-gdb"></a>
 + Usage: `gdb a.out`
@@ -1141,6 +1147,7 @@ Two's Complement is significant when it comes to signed numbers.
 ### Kirchhoff's Laws <a id="ee-kirchhofflaws"></a>
 ## References
 + Dr. Neil Spring's Lecture Notes
++ Dr. Nelson Padua-Perez's Lecture Slides
 + [C Syntax - Wikipedia](https://en.wikipedia.org/wiki/C_syntax)
 + [C Programming - Programiz](https://www.programiz.com/c-programming/)
 + [Discussion about array sizes - Reddit](https://www.reddit.com/r/programming/comments/1scchh/the_difference_between_arr_and_arr_how_to_find/cdwjgup/)
