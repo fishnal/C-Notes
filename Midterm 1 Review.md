@@ -939,12 +939,14 @@ Command line arguments are arguments that you pass in through the command line.
 ### Recursion <a id="clang-recursion"></a>
 ## Memory Maps <a id="memmap"></a>
 ## Bitwise Operators <a id="bitwiseops"></a>
-|Operator|Name|Type|Description|
-|:-:|:-:|:-:|:-|
-|`&`|AND|binary|true if both true|
-|`|`|OR|binary|true if one true|
-|`^`|XOR|binary|true if one true and one false|
-|`~`|NOT|unary|true if false|
+|Operator|Name|Type|Description|Example|
+|:-:|:-:|:-:|:-|:-|
+|`&`|AND|binary|true if both true|`3&2 = 2`|
+|`|`|OR|binary|true if one true|`3|2 = 3`|
+|`^`|XOR|binary|true if one true and one false|`3^2 = 1`|
+|`~`|NOT|unary|true if false|`~3 = 0` (assuming 2-bit number)|
+|`>>`|right shift|binary|shifts a number `n` bits to the right (divides and truncates by 2<sup>`n`</sup>)|`9>>3 = 1`|
+|`<<`|left shift|binary|shifts a number `n` bits to the left (multiplies by 2<sup>`n`</sup>)|`9<<3 = 72`|
 
 Do not confuse the bitwise operators for the boolean operators!
 Hexadecimal can easily be converted to binary:
