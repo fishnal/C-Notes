@@ -942,7 +942,7 @@ Command line arguments are arguments that you pass in through the command line.
 |Operator|Name|Type|Description|Example|
 |:-:|:-:|:-:|:-|:-|
 |`&`|AND|binary|true if both true|`3&2 = 2`|
-|`|`|OR|binary|true if one true|`3|2 = 3`|
+|`\|`|OR|binary|true if one true|`3|2 = 3`|
 |`^`|XOR|binary|true if one true and one false|`3^2 = 1`|
 |`~`|NOT|unary|true if false|`~3 = 0` (assuming 2-bit number)|
 |`>>`|right shift|binary|shifts a number `n` bits to the right (divides and truncates by 2<sup>`n`</sup>)|`9>>3 = 1`|
