@@ -47,9 +47,8 @@
 	+ [valgrind](#debug-valgrind)
 	+ [splint](#debug-splint)
 + [Electrical Engineering](#ee)
-	+ [Basics](#ee-basics)
+	+ [Resistors](#ee-resistors)
 	+ [Voltage Dividers](#ee-voltdiv)
-	+ [Diodes](#ee-diodes)
 	+ [Kirchhoff's Laws](#ee-kirchhofflaws)
 + [References](#refs)
 
@@ -285,7 +284,10 @@ Only listing the notable ones in C that we use in class:
 	sizeof(char); /* always 1 */
 	sizeof(int *); /* however many bytes a pointer is on your machine */
 	```
-+ `static` localizes a symbol; value of a static variable persists until end of program
++ `static` localizes a symbol
+	+ A global static variable is one that can only be referenced in the same file
+	+ A global static function is one that can only be referenced by other functions in the same file
+	+ A local static variable is a static variable inside a function. It's value persists until the end of the program. 
 	```c
 	/* file.c */
 
@@ -304,6 +306,21 @@ Only listing the notable ones in C that we use in class:
 	foo(); /* prints 0, a is now 5 */
 	foo(); /* prints 5, a is now 10 */
 	```
+	+ There are some small caveats with local static variables:
+	```c
+	void foo() {
+	  static int a = 10;
+	  static int b;
+	  b = 5;
+
+	  printf("%d\n", a++);
+	  printf("%d\n", b++);
+	}
+
+	foo(); /* prints 10 5 */
+	foo(); /* prints 11 5 */
+	```
+	This happens because `static int b;` gives `b` a garbage value, and then the next line `b = 5;` reassigns `b` to be 5. When `foo` is called the first time, `b` is a garbage value, set to 5, printed, and then incremented by 1 (so `b` is 6). Calling `foo` the second time, `b` is currently 6, but it gets reassigned to 5, printed, and incremented by 1 (so `b` is basically forever 6).
 + `struct` used for declaring a structure which can hold variables of different types under one name ([more](#clang-struct))
 + `typedef` used to explicitly associate a type with an identifier
 	```c
@@ -1022,10 +1039,12 @@ Command line arguments (CLAs) are arguments that you pass in through the command
 
 If we wanted to incorporate CLAs into our program, we add two parameters to our `main` function:
 ```c
-int main(int argc, int *argv[]) { ... }
+int main(int argc, char *argv[]) { ... }
 ```
-+ `argc` is the number of arguments that were passed in via the command line
-+ `argv` is the value of the argument that were passed in via the command line.
++ `argc` is the number of arguments that were passed in via the command line. `argc` will always be greater than or equal to 1 (explained in `argv`).
++ `argv` is the value of the argument that were passed in via the command line. `argv` will always contain `a.out` (or whatever your executable file was called) as it's first element, and then the rest of your arguments follow. Hence why `argc >= 1`.
+	+ This can allow us to figure out from which file the program was executed from
+	+ `argv` can also be a `char **`
 ### Recursion <a id="clang-recursion"></a> **[needs to be peer reviewed]**
 There isn't anything unique or special to recursion in C. But there are some properties of C that you can take advantage of:
 + Local `static` variables can be useful in recursive functions as it can remove the need for a helper function:
@@ -1103,7 +1122,17 @@ One's Complement simply involves flipping all the bits, or performing the `NOT` 
 Two's Complement is just taking the One's Complement of a number and adding 1 to the result
 + i.e. 1101 -> 0010 + 1 -> 0010
 
-Two's Complement is significant when it comes to signed numbers.
+Two's Complement is significant when it comes to signed numbers. A question you may be asked is
+```
+What is the two's complement of -5 of a 4-bit number?
+```
+The approach is to
++ Find the binary representation of `5` for a 4-bit number, which is `0101`.
++ Flip it -> `1010`.
++ Add 1 -> `1011`.
++ And you're done!
+
+This approach applies to basically any negative integer of an `n`-bit number.
 ## Debuggers <a id="debug"></a>
 ### gdb <a id="debug-gdb"></a>
 + Usage: `gdb a.out`
@@ -1141,13 +1170,35 @@ Two's Complement is significant when it comes to signed numbers.
 + Tool for statically checking C programs
 + Can help us detect uninitialized variables, empty conditional/loop bodies, or even wrong return types.
 ## Electrical Engineering <a id="ee"></a>
-### Basics <a id="ee-basics"></a>
+### Resistors <a id="ee-resistors"></a>
++ Resistors
+	+ Resists/limits flow of electrons through a circuit
+	+ Measured in **ohms**
+	+ Series: sum of resistors
+		+ `R`<sub>`total`</sub> `=` `R`<sub>`1`</sub> `+` `R`<sub>`2`</sub> `+ ... +` `R`<sub>`n`</sub>
+	+ Parallel: inverse of sum of inverses
+		+ `R`<sub>`total`</sub> `=` (`R`<sub>`1`</sub><sup>`-1`</sup> `+` `R`<sub>`2`</sub><sup>`-1`</sup> `+ ... +` `R`<sub>`n`</sub><sup>`-1`</sup>)<sup>`-1`</sup>
+	+ Ohm's Law: `V = IR`
+		+ `V` voltage (volts)
+		+ `I` current (amperes)
+	+ Resistors dissipate power in the form of heat: `P = IV`
+		+ `P` power (watts)
+		+ `I` current
 ### Voltage Dividers <a id="ee-voltdiv"></a>
-### Diodes <a id="ee-diodes"></a>
++ A type of resistor circuit that turns big voltages into smaller ones
++ Uses two resistors in series:
+
+	![Diagram of a voltage divider](volt_div.png)
++ `V`<sub>`out`</sub> `=` `V`<sub>`in`</sub> `*` `R`<sub>`2`</sub> `/` `(R`<sub>`1`</sub> `+` `R`<sub>`2`</sub>`)`
++ `V`<sub>`out`</sub> is the smaller voltage
 ### Kirchhoff's Laws <a id="ee-kirchhofflaws"></a>
++ Kirchhof's Current Law (KCL): sum of currents flowing into a circuit element is equal to the sum of currents flowing out of that element
++ Kirchhof's Voltage Law (KVL): the sum of the voltage difference across all circuit elements (including source) is 0
 ## References
 + Dr. Neil Spring's Lecture Notes
 + Dr. Nelson Padua-Perez's Lecture Slides
 + [C Syntax - Wikipedia](https://en.wikipedia.org/wiki/C_syntax)
 + [C Programming - Programiz](https://www.programiz.com/c-programming/)
 + [Discussion about array sizes - Reddit](https://www.reddit.com/r/programming/comments/1scchh/the_difference_between_arr_and_arr_how_to_find/cdwjgup/)
++ [Resistors - Sparkfun](https://learn.sparkfun.com/tutorials/resistors)
++ [Voltage Dividers - Sparkfun](https://learn.sparkfun.com/tutorials/voltage-dividers)z
