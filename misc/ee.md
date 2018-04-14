@@ -1,14 +1,19 @@
 # Electrical Engineering
+
 + [Voltage](#ee-voltage)
 + [Resistors](#ee-resistors)
 + [Voltage Dividers](#ee-voltdiv)
 + [Kirchhoff's Laws](#ee-kirchhofflaws)
 + [Admittance](#ee-admittance)
-## Voltage <a id="ee-voltage"></a>
+
+## Voltage <a name="ee-voltage"></a>
+
 + Voltage drops are completely relative
 + You don't find voltage "at a point", you find the voltage drop between two points/locations on the circuit
 + Input voltage doesn't equate to a source
-## Resistors <a id="ee-resistors"></a>
+
+## Resistors <a name="ee-resistors"></a>
+
 + Resists/limits flow of electrons through a circuit
 + Type of impedance
 + Measured in **ohms**
@@ -25,17 +30,22 @@
 + Resistors dissipate power in the form of heat: P = IV
 	+ P power (watts)
 	+ I current
-## Voltage Dividers <a id="ee-voltdiv"></a>
+
+## Voltage Dividers <a name="ee-voltdiv"></a>
+
 + A type of resistor circuit that turns big voltages into smaller ones
 + Uses two resistors in series:
 
 	![Diagram of a voltage divider](ee_volt_div.png)
 + V<sub>out</sub> = V<sub>in</sub> * R<sub>2</sub> / (R<sub>1</sub> + R<sub>2</sub>)
 + V<sub>out</sub> is the smaller voltage
-## Kirchhoff's Laws <a id="ee-kirchhofflaws"></a>
+
+## Kirchhoff's Laws <a name="ee-kirchhofflaws"></a>
+
 + Kirchhof's Current Law (KCL): sum of currents flowing into a circuit element is equal to the sum of currents flowing out of that element
 + Kirchhof's Voltage Law (KVL): the sum of the voltage difference across all circuit elements (including source) is 0
-## Admittance <a id="ee-admittance"></a>
+
+## Admittance <a name="ee-admittance"></a>
+
 + One type of admittance is **mho**, the inverse of resistance
 	+ Symbol is upside down omega
-+ 

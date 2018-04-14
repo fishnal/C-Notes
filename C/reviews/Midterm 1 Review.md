@@ -1,4 +1,7 @@
+# CMSC 216H Midterm #1 Review
+
 ## Contents
+
 + [Unix Commands](#unix)
 	+ [cp](#unix-cp)
 	+ [ls](#unix-ls)
@@ -52,46 +55,50 @@
 	+ [Kirchhoff's Laws](#ee-kirchhofflaws)
 + [References](#refs)
 
-## Unix Commands <a id="unix"></a>
-+ `cp` <a id="unix-cp"></a> copies files and directories
+## Unix Commands <a name="unix"></a>
+
++ `cp` <a name="unix-cp"></a> copies files and directories
 	+ Usage: `cp [opts] <SRC> <DIR>`
 	+ `-r|-R|--recursive` copies directories recursively
-+ `ls` <a id="unix-ls"></a> lists directory contents
++ `ls` <a name="unix-ls"></a> lists directory contents
 	+ Usage: `ls [opts] [FILE]` lists info about file
 	+ `-a` includes ALL hidden files (including `.` and `..`)
 	+ `-A` includes MOST hidden files (excludes `.` and `..`)
 	+ `-d|--directory` lists directories but not their contents
 	+ `-R|--recursive` lists subdirectories recursively
-+ `cd` <a id="unix-cd"></a> changes current working directory
++ `cd` <a name="unix-cd"></a> changes current working directory
 	+ `.` will change to current working directory (no real effect)
 	+ `..` will go up one level (if it can)
-+ `pwd` <a id="unix-pwd"></a> prints name of current working directory
-+ `rm` <a id="unix-rm"></a> removes files or directories
++ `pwd` <a name="unix-pwd"></a> prints name of current working directory
++ `rm` <a name="unix-rm"></a> removes files or directories
 	+ Usage: `rm [opts] <FILE>`
 	+ `-r|-R|--recursive` removes directories and their contents recursively
 	+ `-d|--dir` removes empty directories
-+ `mv` <a id="unix-mv"></a> moves/renames files
++ `mv` <a name="unix-mv"></a> moves/renames files
 	+ Usage: `mv <SRC> <DEST>` renames `SRC` to `DEST`
 	+ Usage: `mv <SRC> <DIR>` moves `SRC` to `DIR`
 	+ ***how do you move a file up a directory***
-+ `diff` <a id="unix-diff"></a> compares files line by line
++ `diff` <a name="unix-diff"></a> compares files line by line
 	+ Usage: `diff [opts] <FILE1/DIR1> <FILE2/DIR1>`
 	+ `-bwi` ignores whitespaces, but not empty lines
 	+ `-Bwi` ignores whitespaces and empty lines
-+ `touch` <a id="unix-touch"></a> changes the timestamp on a file
++ `touch` <a name="unix-touch"></a> changes the timestamp on a file
 	+ Usage: `touch [opts] <FILE>`
 	+ If used on existing file, file's timestamp changed to now
 	+ If used on non-existing file, creates that file
 	+ `-c|--no-create` does not create a file
-+ `gcc` <a id="unix-gcc"></a> compiles C/C++ files
++ `gcc` <a name="unix-gcc"></a> compiles C/C++ files
 	+ Usage: `gcc [opts] <FILES>`
 	+ `-c` compiles but does not link (output file ends with `.o`)
 	+ `-o <FILE>` places output file in specified file
 	+ `-g` compiles with debugging symbols
 
-## C Specifics <a id="clang"></a>
-### General Info <a id="clang-info"></a>
+## C Specifics <a name="clang"></a>
+
+### General Info <a name="clang-info"></a>
+
 Things special about C:
+
 + Memory management, no garbage collection
 + Programmer trusted to check errors; no exception protocol
 + Programmer trusted to check input is valid and consistent
@@ -99,11 +106,13 @@ Things special about C:
 + Not built around object-oriented features (though can be simulated)
 
 C does share some things with Java (well technically the other way around, but same difference):
+
 + Imperative
 + Compiled
 + Explicitly typed
 
 Assume we use the following compilation flags for any of the below examples:
+
 + `-ansi` ANSI standard C programs (more portable)
 + `-Wall` includes a bunch of common warnings
 + `-Wshadow` warns whenever a local variable shadows another local variable
@@ -114,8 +123,11 @@ Assume we use the following compilation flags for any of the below examples:
 + `-fstack-protector-all` buffer overflow protection for all functions
 
 This isn't used in most of our compilations, but it's important to know:
+
 + `-c` compile only
-### Data Types <a id="clang-datatypes"></a>
+
+### Data Types <a name="clang-datatypes"></a>
+
 + The following can be signed or unsigned:
 	+ `char` exactly 1 byte (8 bits)
 	+ `short`
@@ -140,7 +152,7 @@ This isn't used in most of our compilations, but it's important to know:
 	+ As such, there's a heiarchy of types:
 		+ Floating-precision over integer-precision
 		+ Wide over small
-		+ Unsigned over signed	
+		+ Unsigned over signed
 	```c
 	float f = 5.02;
 	int i = 100;
@@ -154,7 +166,9 @@ This isn't used in most of our compilations, but it's important to know:
 	   print */
 	printf("%d\n", f);
 	```
-### Operators <a id="clang-ops"></a>
+
+### Operators <a name="clang-ops"></a>
+
 + `+`, `-`, `*`, `/`, `%`
 + `=`, `+=`, `-=`, `*=`, `/=`, `%=`
 + `++`, `--`
@@ -162,24 +176,32 @@ This isn't used in most of our compilations, but it's important to know:
 + `==`, `!=`, `<`, `<=`, `>`, `>=`, `&&`, `||`
 + `()` parentheses for order of operations
 + Assignment operator evaluates to the `rvalue` (see the [end of pointers](#clang-ptrs))
-### Preprocessor <a id="clang-preproc"></a>
+
+### Preprocessor <a name="clang-preproc"></a>
+
 `#include` and `#define` are both preprocessor directives. Directives end up being a "copy and paste" of whatever they are into wherever they are mentioned.
+
 + Both of these directives can only span one line
-#### #include <a id="clang-preproc-include"></a>
+
+#### #include <a name="clang-preproc-include"></a>
+
 + Includes a header file and will copy the text of that header file into the current file
 + i.e. `#include <stdio.h>` copies text of `stdio.h` into the file
 + Angled brackets indicate file should be searched in the standard compiler paths
+
 + Quotes indicates the search should be exapnded to include current source directory (note that it also includes std. compiler paths)
-#### #define <a id="clang-preproc-define"></a>
+
+#### #define <a name="clang-preproc-define"></a>
+
 + Defines object-like or function-like macros
 + By convention, defined symbols are in ALL CAPS
-+ Object syntax: `#define <NAME> <value>`
-+ Function syntax: `#define <NAME>(<parameters>) <value/body of function>`
++ Object syntax: `#define <NAME> <token>`
++ Function syntax: `#define <NAME>(<parameters>) <token/body of function>`
 	+ Note that there must be no space between the name and parameters
 	+ Wrap parameters in parentheses before doing anything with them (preprocessor will directly copy and paste)
 		```c
 		#define SQUARE(a) a*a
-		
+
 		int main() {
 		  int x = 2;
 		  SQUARE(x); /* 4 */
@@ -195,7 +217,7 @@ This isn't used in most of our compilations, but it's important to know:
 		#include <stdio.h>
 		#define MULTIPLE() printf("HELLO\n"); \
 			printf("HELLO AGAIN\n");
-		
+
 		int main() {
 		  MULTIPLE();
 		  /* prints HELLO and HELLO AGAIN on two separate lines */
@@ -236,9 +258,12 @@ This isn't used in most of our compilations, but it's important to know:
 		```c
 		if (0) do { printf("%d\n", a); printf("%d\n", a); } while(0);
 		```
-#### #ifdef <a id="clang-preproc-ifdef"></a>
+
+#### #ifdef <a name="clang-preproc-ifdef"></a>
+
 + Enables compilation to happen conditionally
 + "If this symbol is defined, then compile the following"
+
 ```c
 #define NAME "Vishal"
 
@@ -259,8 +284,11 @@ int main() {
   #endif
 }
 ```
-### Keywords <a id="clang-kws"></a>
+
+### Keywords <a name="clang-kws"></a>
+
 Only listing the notable ones in C that we use in class:
+
 + `const` makes an identifier constant
 	```c
 	const int a = 20;
@@ -333,19 +361,26 @@ Only listing the notable ones in C that we use in class:
 	```
 + `union` used for grouping different types of variable under one name ([more](#clang-union))
 + `void` indicates function doesn't have return value
-### Expressions <a id="clang-expr"></a>
+
+### Expressions <a name="clang-expr"></a>
+
 There is no boolean data type in C, instead numbers are used. `0` is false, and any other integer is true, including negatives.
 
-### Conditional statements <a id="clang-condtls"></a>
+### Conditional statements <a name="clang-condtls"></a>
+
 Standard conditional statements:
+
 + `if`
 + `else if`
 + `else`
 + ternary operators
 + `switch` (same format as Java switch statements)
-+ I guess `#ifdef-#endif` are conditional statements as well but for preprocessing?
-### Loops <a id="clang-loops"></a>
++ `#ifdef-#endif` are conditional statements as well but for preprocessing
+
+### Loops <a name="clang-loops"></a>
+
 Loops in C are typical loops you would see elsewhere. You have 3 main ones, `while`, `for`, and `do-while`. All of them have the same general syntax as described in many other languages. There are a few caveats in C though.
+
 + **CANNOT** declare a variable inside a for-loop. In fact, you can only declare variables before executing code statements.
 	```c
 	int x = 20;
@@ -365,20 +400,25 @@ Loops in C are typical loops you would see elsewhere. You have 3 main ones, `whi
 	for (i = 0; i < strlen(str); i++) { ... }
 	```
 	The question is, how many times is `strlen(str)` called? Likely 3 times. What if the string were declared as `char const *str = "hello"`? It could be only 1 time if the compiler was smart enough to figure out `str` was a constant string.
-### Pointers <a id="clang-ptrs"></a>
+
+### Pointers <a name="clang-ptrs"></a>
+
 In declarations, the asterisk (`*`) specifies a pointer type. Pointer values associate two pieces of info: a *memory address* and a *data type*.
 A good trick in understanding the declaration of pointers is *quite literally* reading the declaration from right to left.
+
 ```c
 int *ptr; /* pointer to integer */
 const int *ptr2; /* pointer to integer constant (better read as constant integer, same idea here though); means you can't change value */
 int *const ptr3; /* const pointer to integer; means you can't change address */
 int **ptr4; /* pointer to pointer to integer */
 ```
+
 We can *dereference* a pointer by using the asterisk (`*`) again. For example, if we wanted to dereference `ptr`, we simply do `*ptr` (don't try this yet, keep on reading).
 
 In the above example, ALL the pointers have not been initialized. Attempting to dereference any of them is not exactly a good idea, and results in undefined behavior.
 
 So how do we fix that? Simple, just assign a memory address location to that pointer. This can be done in a variety of ways: use `malloc`, `calloc`, or get the address of another appropriate variable (known as *referencing*). We can reference an address by using the "address-of" unary operator (`&`), as shown below:
+
 ```c
 int x = 10, y = 50;
 int *ptr = &x; /* points to address of x */
@@ -392,6 +432,7 @@ int **ptr4;
 ptr4 = &ptr3;
 *ptr4 = &y;
 ```
+
 Ok so those last few lines in the example above are some important things to take note of. 
 
 `*ptr = 20` will change the value of `x` to 20, which also effectively changes `*ptr2` and `*ptr3` to `20` because they both point to the address of `x`. We can have the compiler stop us when do we such a thing if we really don't want `*ptr2` to change since we made `ptr2` point to a constant integer. We can simply make `x` a `const int`. The compiler will stop us saying "Hey, you could possibly change the value of `x`, a constant integer, by reassigning `*ptr`!" (this error stems from the `-pedantic-errors` flag)
@@ -399,8 +440,11 @@ Ok so those last few lines in the example above are some important things to tak
 `ptr4 = &ptr3; *ptr4 = &y;` looks more daunting but it's actually somewhat similar to the above scenario. In this scenario, the compiler will stop us and spit out an error. This is because `ptr4 = &ptr3` discards the idea that `ptr3` is a constant pointer. If we this went through execution, we could now change what `ptr3` points to, which is not what we want to happen at all. What we could do to change this is declare `ptr4` as a pointer to a constant pointer to an integer, or `int *const *ptr4` in C code. So now we can do `ptr4 = &ptr3`, but not `*ptr4 = &y` because that'll be changing the pointer that `ptr4` points to, which is intended to be constant.
 
 Simiarly, if `x` were a `const int`, then `int *ptr = &x` and `int *const ptr3 = &x` are not allowed (compiler will throw an error about those specifically). That's because both `ptr` and `ptr3` never made a promise to keep the value of the integer they're pointing constant. DO NOT confuse `ptr3` as a pointer to a constant integer, that is `ptr2`. `ptr3` has a constant pointer, but the value of the integer it's pointing to can be changed via `*ptr3`.
-#### Pointer Arithmetic <a id="clang-ptrs-arithmetic"></a>
+
+#### Pointer Arithmetic <a name="clang-ptrs-arithmetic"></a>
+
 There's also *pointer arithmetic*, which explains how adding numbers with memory addresses works. For example, say we have `int *ptr` that points to address `0x04`. Assuming the size of an `int` is 4 bytes, performing `*(ptr + 1)` will get the integer value at the memory address `0x08`. But didn't we just add 1 to `ptr`, so why isn't the referenced address `0x05`? Because the `+1` indicates to move forward `1*sizeof(int)` bytes in memory. So we advanced `0x04` 4 bytes foward to get `0x08`. The generalized way of viewing this is that `<data type> *ptr` will advance `n * sizeof(<data type>)` bytes ahead in memory when doing pointer arithmetic (`n` is some arbitrary amount). A shorter way of looking at this is jumping _memory blocks_ rather than the memory addresses themselves.
+
 ```c
 /* assume sizeof(char) returns 1 */
 char *ptr = ...; /* say it points to 0x04 */
@@ -413,14 +457,19 @@ int i = *(ptr2 + 2); /* gets int value at 0x14 assuming int is 4 bytes */
    not the address themselves, so prints 2 */
 printf("%li\n", (ptr2 + 2) - ptr);
 ```
+
 Also note that `ptr++` is allowed as it is equivalent to `ptr = ptr + 1`. Also be wary of `*ptr++`, that **does not** increment that value that `ptr` points to; it dereferences `ptr`, and then increments the value of `ptr`. It's equivalent to calling `*(ptr++)`.
 
 
 Important to understand `rvalue` and `lvalue` when dealing with "address-of" operator (`&`) and asterisk modifier (`*`):
+
 + `rvalue` refers to data value; can't have value assigned to it, which means can only appear on right side of assignment operator (think of right-value)
 + `lvalue` refers to a place/location where we can store a value; appears on left side of assignment operator (think of left-value).
-#### void * <a id="clang-ptrs-void"></a>
+
+#### void * <a name="clang-ptrs-void"></a>
+
 A void pointer (`void *`) is a sort of "generic" pointer type. It can be converted to any other type without an explicit cast. But, you can't do dereference it or do pointer arithmetic with it; first cast it to a specific type then have your fun with it.
+
 ```c
 void foo(void * void_ptr) {
   /* print memory address */
@@ -433,10 +482,15 @@ int **ptr2 = malloc(sizeof(int) * sizeof(int));
 foo(ptr);
 foo(ptr2); /* (int **) is a pointer to an (int *), so this is valid! */
 ```
+
 Just a heads up, void pointers are **not** valid for [function pointers](#clang-func-ptr)!
-### Dynamic Memory Allocation <a id="clang-dynamicmem"></a>
+
+### Dynamic Memory Allocation <a name="clang-dynamicmem"></a>
+
 There are two things we need to understand before we engage in dynamic memory: the *stack* and *heap*.
-#### Stack <a id="clang-dynamicmem-stack"></a>
+
+#### Stack <a name="clang-dynamicmem-stack"></a>
+
 + The stack is a literal stack data structure (push and pop)
 + Automatic variables: like when you enter a scope/function variables are given some space, when you leave a scope space is reclaimed (simple and easy)
 + Function parameters and return values
@@ -447,7 +501,9 @@ There are two things we need to understand before we engage in dynamic memory: t
 		+ Any addresses below stack pointer are invalid
 + Small objects, think like couple megabytes.
 + We have no control over stack in the sense that we can't insert/remove some space in the middle of the stack (why would that make *any* sense?)
-#### Heap <a id="clang-dynamicmem-heap"></a>
+
+#### Heap <a name="clang-dynamicmem-heap"></a>
+
 + Think of it as a bunch of papers on the ground, with none of them overlapping (I guess they can be placed perfectly next to each other, not the point though).
 + When program wants something from heap, looks at a certain location/memory address and gets it.
 + Explicit memory allocations
@@ -455,11 +511,15 @@ There are two things we need to understand before we engage in dynamic memory: t
 + Sized as you need it
 
 Dynamic memory allocation refers to manual memory management in C. So what are the pros and cons of not having a garbage collector?
+
 #### Pros
+
 + Fast, predictable performance
 + Don't need to chase pointers around
 + Don't need to check which pointers can't be accessed
+
 #### Cons
+
 + Can forget about, or lose, allocated memory
 + Mem leaks in kernel are bad because no swap for kernel
 + Double-freeing memory: freeing memory that was already freed
@@ -467,6 +527,7 @@ Dynamic memory allocation refers to manual memory management in C. So what are t
 + Overrun: overrunning into different allocated regions can cause overwrites!
 
 We can manually manage memory using 4 methods from `<stdlib.h>`:
+
 + `malloc(size_t size) -> void *` allocates `size` bytes and returns pointer to allocated memory; memory is **not** initialized
 	+ Passing in `0` returns either `NULL` or unique pointer value that can later be freed
 + `calloc(size_t nmemb, size_t size) -> void *` allocates memory for an array of `nmemb` elements of `size` bytes each and returns pointer to allocated memory; memory is initialized to `0`
@@ -483,7 +544,9 @@ We can manually manage memory using 4 methods from `<stdlib.h>`:
 	+ If the area pointed to by `ptr` was moved, `free(ptr)` is done
 	+ If we allocate 20 bytes but read in 10, shrinks to 10
 	+ If we allocate 20 bytes but read in 30, grows to 30. Note that it may move memory location if it encounters buffer overrun
+
 #### The DON'TS
+
 + Double free memory: null pointer after freeing it, that way if you free again nothing should happen
 + Freeing memory on stack: only free memory that was manually allocated
 + Freeing address in middle of block
@@ -508,18 +571,21 @@ We can manually manage memory using 4 methods from `<stdlib.h>`:
 		p = &c; /* p is dangling pointer after leaving this scope */
 	}
 	printf("%s\n", p); /* prints garbage */
-	
+
 	p = malloc(sizeof(char));
 	free(p);
 	/* p is dangling pointer after freeing and not nulling */
 	printf("%s\n", p); /* prints garbage */
 	```
-### Arrays <a id="clang-arrays"></a>
+
+### Arrays <a name="clang-arrays"></a>
+
 ***Arrays start at 0 ([like all arrays should...](http://www.cs.utexas.edu/users/EWD/transcriptions/EWD08xx/EWD831.html))***
 
 Arrays in C can be made in two ways: fixed arrays/initializers and pointers.
 
 Fixed arrays are fixed in size, hence the name. `int arr[10]` will create an array of 10 integers. In C, however, the size of a fixed array must be determined during compile time. This means that you cannot use a variable size; only macro definitions and literals.
+
 ```c
 #define SIZE 10
 
@@ -534,7 +600,9 @@ int arr4[SIZE + 10]; /* allowed; values are garbage */
 int arr5[SIZE + x]; /* not allowed */
 int arr6[SIZE + y]; /* not allowed */
 ```
+
 We can also use array initializers, though they have some caveats:
+
 ```c
 /* arr[0] = 1, arr[1] = 2, so on... */
 int arr[5] = { 1, 2, 3, 4, 5 };
@@ -551,25 +619,33 @@ int arr4[5] = { 1, 2, 3, 4, 5, 6 };
 /* error, empty initializer */
 int arr5[5] = {};
 ```
+
 Arrays can also be made through pointers:
+
 ```c
 int arr[5];
 int *ptr_arr = arr;
 ```
+
 Why can we do this? Because whenever we refer to `arr` it *decays* to a pointer to the first element of `arr`. This results in an `int *`, which we see in `int *ptr_arr = arr`. When decayed to an `int *`, we no longer know what the size of the array is. Sure, we can do `sizeof(arr)` to get the total number of bytes in `arr`, which would be `5*sizeof(int)`, and then the length of `arr` by doing `sizeof(arr)/sizeof(int)`. What about `sizeof(ptr_arr)` then? That returns `sizeof(int *)`, or effectively the number of bytes a pointer takes up on your machine. There's no way to get the length of the array `ptr_arr` at runtime; we have to have it stored somewhere for later use.
 
 But we can take advantage of this! We can access the elements in the array using pointer arithmetic OR array subscripts: `arr[i] == *(arr + i)`. These are the same, but it is conventional to stick to the notation in which the array was declared:
+
+
 ```c
 int arr[5]; /* use arr[i] */
 int *ptr = arr; /* use *(arr + i) */
 ```
 
 Now let's spice it up by referencing an array's address.
+
 ```c
 int arr[5];
 int (*ptr_to_arr)[5] = &arr;
 ```
+
 When we do `&arr`, we are referring to a pointer with the type `int (*)[5]`, or a pointer to an array of 5 integers. This is *not* the same as `int *` because decaying has not occurred. Here are some interesting things about this:
+
 ```c
 sizeof(ptr_to_arr); /* returns size of a pointer, nothing new */
 sizeof(*ptr_to_arr); /* returns size of int[5], or 5*sizeof(int) */
@@ -583,15 +659,20 @@ sizeof(*ptr_to_arr); /* returns size of int[5], or 5*sizeof(int) */
  */
 printf("%x\n", ptr_to_arr + 1); /* prints 0x24 */
 ```
+
 Another important note is that we can't reassign an array. If we could, that could mean the array ends up having more elements than we initially allocated it to have:
+
 ```c
 int arr[3];
 int *ptr_arr = malloc(sizeof(int) * 5);
 arr = ptr_arr;
 /* if this was ok, then arr would have 5 elements and have a buffer overrun */
 ```
-#### Multi Dimensional Arrays <a id="clang-arrays-multidim"></a>
+
+#### Multi Dimensional Arrays <a name="clang-arrays-multidim"></a>
+
 Multi dimensional arrays in C are just a one-dimensional array whose elements are arrays (much like in Java) and are stored in [row-major](https://en.wikipedia.org/wiki/Row-major_order) order.
+
 ```c
 int matrix[5][5]; /* familiar 2d array declaration*/
 int **matrix2 = malloc((sizeof(int) * 5) * 5); /* pointer style */
@@ -606,8 +687,11 @@ for (r = 0; r < 5; r++) {
   }
 }
 ```
+
 Again, follow proper convention when accessing the elements.
-### Strings <a id="clang-string"></a>
+
+### Strings <a name="clang-string"></a>
+
 + A string in C is really a `char` array.
 	+ `char[constant size]`
 	+ `char *`
@@ -633,6 +717,7 @@ Again, follow proper convention when accessing the elements.
 	+ `dest` must be large enough, otherwise undefined behavior!
 		+ \>= `strlen(dest) + strlen(src) + 1` buffer capacity with `strcat`
 		+ \>= `strlen(dest) + n + 1` buffer capacity with `strncat`
+
 ```c
 const char *a = "hello";
 const char *b = "hello";
@@ -640,10 +725,13 @@ printf("%d\n", a == b); /* prints 1 or true */
 a[0] = 'f'; /* not allowed because a is a pointer to a constant char */
 *a = 'f'; /* not allowed, same issue */
 ```
-### I/O <a id="clang-io"></a>
+
+### I/O <a name="clang-io"></a>
+
 Read up on format strings for both [input](http://www.cplusplus.com/reference/cstdio/scanf/) and [output](http://www.cplusplus.com/reference/cstdio/printf/). We don't need to know every single format specifier and flag.
 
 Here are some common input/output functions found in `stdio.h`:
+
 + `printf(const char *format, ...)` prints a format string to stdout; returns number of characters written
 + `scanf(const char *format, ...)` reads in a format string from stdin; returns number of items in arguments list that were successfully filled/read in
 	+ If `scanf` encounters an invalid input (say it was expecting a number but got a character/letter), then it stops reading.
@@ -665,7 +753,7 @@ Here are some common input/output functions found in `stdio.h`:
   |`a+`|append/update (creates file if DNE)
 
 + `fread(void *ptr, size_t size, size_t count, FILE *stream)` reads `count` elements (each `size` bytes long) from `stream` and stores into `ptr`
-+  `fwrite(void *ptr, size_t size, size_t count, FILE *stream)` same as `fread` but writes to `stream` from `ptr`
++ `fwrite(void *ptr, size_t size, size_t count, FILE *stream)` same as `fread` but writes to `stream` from `ptr`
 + `fgets(char *str, int num, FILE *stream)` reads at most `num` characters (or until `EOF`) into `str` from `stream`; adds null character
 + `fputs(const char *s, FILE *stream)` writes to `s` to `stream` w/o the null character from `s`
 + `fscanf(FILE *stream, const char *format, ...)` like `scanf` but with a file
@@ -675,9 +763,12 @@ Here are some common input/output functions found in `stdio.h`:
 + `sscanf(const char *str, const char *format, ...)` llike `scanf` but with a string
 
 Buffered I/O can be very efficient because we don't have to constantly make calls to the file system. Instead, we can do it short bursts/intervals. Take copying a sentence for example. With no "buffering", we would read one character, write it, and repeat until we're done. With buffering, we would read in, say, a few words, write them down, and keep on repeating.
-### enum <a id="clang-enum"></a>
+
+### enum <a name="clang-enum"></a>
+
 + Represents values across a series of named constants
 + Each constant is of type `int`
+
 ```c
 /* A=0, B=1, C=2 */
 enum { A, B, C } enum1; /* enum1 will be a variable of this enumeration */
@@ -699,8 +790,11 @@ enum boolean { false, true };
 enum boolean works = true;
 printf("Works? %d\n", works);
 ```
-### Structures <a id="clang-struct"></a>
+
+### Structures <a name="clang-struct"></a>
+
 A structure holds a collection of variables of differing types under one name. Say you want to store information about a person: their name and age. We can use a `char [81]` (name of 80 chars + null character) and `int` respectively, like so:
+
 ```c
 struct Person {
   char name[81];
@@ -710,7 +804,9 @@ struct Person {
 /* vishal is also a struct variable of type Person */
 struct Person vishal; /* all of vishal's fields will have garbage values */
 ```
+
 It's important to make sure the members of a structure have been properly initialized before using them, especially pointers!
+
 ```c
 /* Continuing from above example */
 /* Can initialize members by using dot (.) operator */
@@ -738,9 +834,12 @@ struct Person vishal_short_2 = { };
 /* Can do this though to zero everything */
 struct Person vishal_short_3 = { 0 };
 ```
+
 Two ways of accessing the members of a structure:
+
 + Member operator (`.`)
 + Structure pointer operator (`->`)
+
 ```c
 printf("%d\n", vishal_good.age); /* 19 */
 printf("%s\n", vishal_quick.name); /* Vishal Patel */
@@ -750,7 +849,9 @@ printf("%d\n", vishal_ptr->age); /* 19 */
 printf("%d\n", (*vishal_ptr).age); /* 19 */
 printf("%d\n", (&vishal_good)->age); /* 19 */
 ```
+
 We can use `typedef` to name the structure as a whole (think of this as abbreviating a really long structure name):
+
 ```c
 typedef struct Very_Long_Name {
   int a;
@@ -763,7 +864,9 @@ VLN var_1 = { 0 }, var_2 = { 0, 0, 500 };
 printf("%d\n", var_1.a); /* 0 */
 printf("%d\n", var_2.c); /* 500 */
 ```
+
 Structures can be nested within structures:
+
 ```c
 struct Class {
   struct Teacher {
@@ -780,7 +883,9 @@ printf("%d\n", class.size); /* 20 */
 printf("%d\n", class_2.teacher.age); /* 0 */
 printf("%d\n", class_2.size); /* 0 */
 ```
+
 Another example of nested structures:
+
 ```c
 struct Teacher {
   int age;
@@ -810,7 +915,9 @@ printf("%d\n", class.size); /* 15 */
 printf("%d\n", class_2.teacher.age); /* 50 */
 printf("%d\n", class_2.size); /* 10 */
 ```
+
 Structures can also container pointers!
+
 ```c
 typedef struct WithPointer {
   int *ptr;
@@ -834,7 +941,9 @@ wp_1.str = malloc(sizeof(char) * 11);
 printf("%d\n", *wp_1.ptr); /* 20 */
 printf("%s\n", wp_1.str); /* HE */
 ```
+
 We can also take advantage of dynamic memory allocation when dealing with structures! As shown above, we allocated some space to the pointer members of `WithPointer`. We can take this one step further and allocate space to a struct pointer itself!
+
 ```c
 struct WP *wp_ptr, *wp_list;
 int list_size = 0;
@@ -844,7 +953,9 @@ wp_ptr = (WP*) malloc(sizeof(WP));
 scanf("%d", &list_size);
 wp_list = (WP*) malloc(list_size * sizeof(WP));
 ```
+
 Assigning one structure to another is a shallow copy. Say we assign `a` to `b`, both of the same struct type. If we change anything in `b`, it is not reflected in `a`, and vice-versa:
+
 ```c
 struct A {
   int i;
@@ -870,8 +981,11 @@ a = b;
 b.i = 30; /* a.i is still 20 */
 b.ptr = &x; /* b.ptr points to x, but a.ptr still points to y */
 ```
-### Unions <a id="clang-union"></a>
+
+### Unions <a name="clang-union"></a>
+
 Unions are similar to structures, but have one big difference: the space allocated to both. The size of a structure will be the sum of the size of all it's members. The size of a union, however, will be the largest size of all it's members. Here's an example:
+
 ```c
 union Union {
   char name[20];
@@ -889,13 +1003,18 @@ struct Structure {
 printf("%d\n", sizeof(u)); /* 20 */
 printf("%d\n", sizeof(p)); /* 28 */
 ```
+
 This happens because unions can access only one of its members at a time, whereas structures can access any of its members at any time. Hence why the size of the union here is 20 bytes, or the largest size among all its members (the size of `name`):
+
 ```c
 strcpy(u.name, "HELLO");
 /* u.name is HELLO, u.age is 
 ```
-### Functions <a id="clang-func"></a>
+
+### Functions <a name="clang-func"></a>
+
 Functions in C are compiled linearly. That means you can't call a function if you haven't defined it before that line.
+
 ```c
 int main() {
   foo(1); /* not allowed! compiler doesn't know what foo is! */
@@ -903,7 +1022,9 @@ int main() {
 
 void foo(int a) { ... }
 ```
+
 A workaround this is placing the defintion of `foo` before `main`
+
 ```c
 void foo(int a) { ... }
 
@@ -911,7 +1032,9 @@ int main() {
   foo(1); /* all good! */
 }
 ```
+
 Another alternative is to use *function prototypes*. These tell the compiler "Hey, I'm going to define this function later on, so don't panic if I make any calls or references to this function!"
+
 ```c
 void foo(int a);
 
@@ -921,18 +1044,22 @@ int main() {
 
 void foo(int b) { ... }
 ```
+
 With prototypes, the compiler will spit out errors if you make a call to the function but it hasn't been defined yet.
 
 A general structure for a function prototype is as follows
+
 ```c
 return_type function_name(type1 arg1, type2 arg2, ...);
 ```
+
 + `typeN` is the type of the argument.
 + `argN` is the name of the argument; this is totally optional in the prototype and does not have to match with your definition (as shown above)
 
 Remember that `static` and `extern` are really important when it comes to functions and variables, take advantage of them!
 
 Parameters for a function are ***always*** passed by value, never by reference. If you want to modify the reference of the argument, use pointers:
+
 ```c
 void foo(int a) {
   a += 2;
@@ -950,22 +1077,30 @@ int main() {
   return 0;
 }
 ```
+
 There's a small caveat when it comes to function parameters:
+
 ```c
 void foo() { ... }
 foo(); /* ok! */
 foo(20); /* ok! */
 ```
+
 and
+
 ```c
 void foo(void) { ... }
 foo(); /* ok! */
 foo(20); /* not so ok... */
 ```
+
 are different functions.
 The former can take an arbitrary amount of arguments, while the latter will take 0 arguments (this helps explain [command line arguments](#clang-cla)).
-#### Function Pointers <a id="#clang-func-ptr"></a>
+
+#### Function Pointers <a name="#clang-func-ptr"></a>
+
 Function pointers are simply just pointers to a function:
+
 ```c
 int add(int a, int b) {
   return a + b;
@@ -978,11 +1113,15 @@ func_ptr = &add;
 
 assert((*func_ptr)(2, 3) == add(2, 3)); /* true */
 ```
+
 Generalized, a function pointer declaration would look like this:
+
 ```c
 return_type (*name)(type1, type2, ...);
 ```
+
 Function pointers allow us to pass in functions as parameters.
+
 ```c
 int use_func_ptr(int (*func_ptr)(int, int), int a, int b) {
   return (*func_ptr)(a, b);
@@ -994,7 +1133,9 @@ int (*ptr)(int, int) = &add;
 
 printf("%d\n", use_func_ptr(ptr, 2, 3)); /* 5 */
 ```
+
 We can also use `typedef` with function pointers to shorten some of those declarations.
+
 ```c
 typedef int (*two_int_func)(int, int);
 
@@ -1008,7 +1149,9 @@ two_int_func add_func = &add;
 
 printf("%d\n", use_func_ptr(add_func, 2, 3)); /* 5 */
 ```
+
 As noted when discussing `void *`, function pointers cannot be cast to a `void *`:
+
 ```c
 void foo() {
   printf("I'm foo!\n");
@@ -1022,31 +1165,42 @@ printf("%p\n", (void *) foo_func_ptr); /* NOT ALLOWED */
 ```
 
 Function pointers are useful when sorting a list. Take, for example, a function that needs to sort a list of arbitrary objects. These objects could be integers, strings, or even some random struct that no sane person would think of designing. A generalized sorting function (say one that implements the selection sort algorithm) can't predict every kind of object it needs to be able to sort (hence why its *generalized*). It should only need to worry about determining when an object is greater than, less than, or equal to another object. So in order to generalize this sorting function, it takes in a function pointer that acts as the comparator.
-### Linkage <a id="clang-linkage"></a>
+
+### Linkage <a name="clang-linkage"></a>
+
 Recall:
+
 + A symbol is a named variable of function.
 + The use of `extern` and `static` scoping.
 
 Linking takes symbols that are referencing in one object file/library, and resolves them with a symbol defined in another object file/library. `static` and `extern` matters when you combine multiple `.c` files.
 
 Linkers, the programs responsible for linking, take machine code files as input and produces an executable object code
+
 + Machine code, or object, files usually end in `.o`
 + Exectable object code end in `a.out` by default from `gcc`, but the name of the executable file can be changed by using the `-o` flag.
 
 For functions and global variables, `static` will indicate that the symbol should not be exported to other files. `extern` is the opposite in that someone can find that symbol elsewhere (if it were declared) or the symbol will be exported elsewhere (if it's being defined).
-### Command Line Arguments <a id="clang-cla"></a>
+
+### Command Line Arguments <a name="clang-cla"></a>
+
 Command line arguments (CLAs) are arguments that you pass in through the command line. These are specified in the `main` function that we typically write. However, we don't need to define `main` to take CLAs if we don't care about them. This is simplified to `int main() { ... }`.
 
 If we wanted to incorporate CLAs into our program, we add two parameters to our `main` function:
+
 ```c
 int main(int argc, char *argv[]) { ... }
 ```
+
 + `argc` is the number of arguments that were passed in via the command line. `argc` will always be greater than or equal to 1 (explained in `argv`).
 + `argv` is the value of the argument that were passed in via the command line. `argv` will always contain `a.out` (or whatever your executable file was called) as it's first element, and then the rest of your arguments follow. Hence why `argc >= 1`.
 	+ This can allow us to figure out from which file the program was executed from
 	+ `argv` can also be a `char **`
-### Recursion <a id="clang-recursion"></a> **[needs to be peer reviewed]**
+
+### Recursion <a name="clang-recursion"></a> **[needs to be peer reviewed]**
+
 There isn't anything unique or special to recursion in C. But there are some properties of C that you can take advantage of:
+
 + Local `static` variables can be useful in recursive functions as it can remove the need for a helper function:
 	```c
 	/* poor implementation of a recursive factorial function */
@@ -1079,16 +1233,21 @@ There isn't anything unique or special to recursion in C. But there are some pro
 	   that the same stack frame is used for each recursive call made for
 	   tail_recurse(int) */
 	```
-## Memory Maps <a id="memmap"></a>
+
+## Memory Maps <a name="memmap"></a>
+
 Don't really know how to explain memory maps, so uh, just refer to [this example](http://www.cs.umd.edu/class/spring2018/cmsc216/exams/exam1/MemoryMapExample.pdf).
 Tips:
+
 + Be wary of pointers and what they point to (to be honest would just triple check them).
 + Parameters are passed in to functions by value, not reference.
 + If you have an uninitialized value, indicate that it's garbage.
 + Start drawing your memory map from the very first executed statement and update values/add variables as you step through the code.
 + Indicate when you have `NULL` values either with `NULL` or the ground symbol.
 + Take up all the space you need; the more space you have for your memory map, the more cleaner your map can look.
-## Bitwise Operators <a id="bitwiseops"></a>
+
+## Bitwise Operators <a name="bitwiseops"></a>
+
 |Operator|Name|Type|Description|Example|
 |:-:|:-:|:-:|:-|:-|
 |`&`|AND|binary|true if both true|`3&2 = 2`|
@@ -1101,14 +1260,17 @@ Tips:
 **Note:** Do not confuse the bitwise operators for the boolean operators!
 
 Hexadecimal can easily be converted to binary:
-```
+
+```text
 0xfa
 -> find binary of 0xf -> 1111
 -> find binary of 0xa -> 1010
 -> concatenate results -> 1111_1010
 ```
+
 This intuition applies to any number base that's a power of 2!
-```
+
+```text
 octal example
 0173 -> 123
 -> find binary of 01 -> 001
@@ -1116,26 +1278,36 @@ octal example
 -> find binary of 03 -> 011
 -> concatenate results -> 001_111_011
 ```
-### One's Two's Complement <a id="bitwiseops-complements"></a>
+
+### One's Two's Complement <a name="bitwiseops-complements"></a>
+
 One's Complement simply involves flipping all the bits, or performing the `NOT` bitwise operation on a number.
+
 + i.e. 1101 -> 0010
 
 Two's Complement is just taking the One's Complement of a number and adding 1 to the result
+
 + i.e. 1101 -> 0010 + 1 -> 0010
 
 Two's Complement is significant when it comes to signed numbers. A question you may be asked is
-```
+
+```text
 What is the two's complement of -5 of a 4-bit number?
 ```
+
 The approach is to
+
 + Find the binary representation of `5` for a 4-bit number, which is `0101`.
 + Flip it -> `1010`.
 + Add 1 -> `1011`.
 + And you're done!
 
 This approach applies to basically any negative integer of an `n`-bit number.
-## Debuggers <a id="debug"></a>
-### gdb <a id="debug-gdb"></a>
+
+## Debuggers <a name="debug"></a>
+
+### gdb <a name="debug-gdb"></a>
+
 + Usage: `gdb a.out`
 + C debugger
 + Remember to compile with `-g` flag
@@ -1158,20 +1330,28 @@ This approach applies to basically any negative integer of an `n`-bit number.
 	+ `up [count]` selects and prints the stack frame that called the current stack frame
 		+ `count` indicates how many frames up to go
 + Stuck in an infinite loop? `Ctrl+C` to send a `SIGINT` to the program. gdb will trap the signal and stop execution
-### valgrind <a id="debug-valgrind"></a>
+
+### valgrind <a name="debug-valgrind"></a>
+
 + Usage: `valgrind [opts] ./a.out`
 + Memory checker
 + Helps us locate problems in our code
 + Can be used to detect invalid memory operations
 + Need to compile with `-g` flag
 + A nice option to use is `--track-origins=yes`. Helps determine root cause of those pesky "Conditional jump or move depends on uninitialised value(s)" messages...'
++ `--leak-check=full` is also a great option, gives us more detail about memory leaks
 + We can do `valgrind ./a.out < public01.in > results` which would act like `./a.out < public01.in > results` but with valgrind
-### splint <a id="debug-splint"></a>
+
+### splint <a name="debug-splint"></a>
+
 + Usage: `splint file.c`
 + Tool for statically checking C programs
 + Can help us detect uninitialized variables, empty conditional/loop bodies, or even wrong return types.
-## Electrical Engineering <a id="ee"></a>
-### Resistors <a id="ee-resistors"></a>
+
+## Electrical Engineering <a name="ee"></a>
+
+### Resistors <a name="ee-resistors"></a>
+
 + Resistors
 	+ Resists/limits flow of electrons through a circuit
 	+ Measured in **ohms**
@@ -1185,17 +1365,23 @@ This approach applies to basically any negative integer of an `n`-bit number.
 	+ Resistors dissipate power in the form of heat: `P = IV`
 		+ `P` power (watts)
 		+ `I` current
-### Voltage Dividers <a id="ee-voltdiv"></a>
+
+### Voltage Dividers <a name="ee-voltdiv"></a>
+
 + A type of resistor circuit that turns big voltages into smaller ones
 + Uses two resistors in series:
 
-	![Diagram of a voltage divider](../misc/ee_volt_div.png)
+	![Diagram of a voltage divider](../../misc/ee_volt_div.png)
 + V<sub>out</sub> = V<sub>in</sub> * R<sub>2</sub> / (R<sub>1</sub> + R<sub>2</sub>)
 + V<sub>out</sub> is the smaller voltage
-### Kirchhoff's Laws <a id="ee-kirchhofflaws"></a>
+
+### Kirchhoff's Laws <a name="ee-kirchhofflaws"></a>
+
 + Kirchhof's Current Law (KCL): sum of currents flowing into a circuit element is equal to the sum of currents flowing out of that element
 + Kirchhof's Voltage Law (KVL): the sum of the voltage difference across all circuit elements (including source) is 0
-## References
+
+## References <a name="refs"></a>
+
 + Dr. Neil Spring's Lecture Notes
 + Dr. Nelson Padua-Perez's Lecture Slides
 + [C Syntax - Wikipedia](https://en.wikipedia.org/wiki/C_syntax)
