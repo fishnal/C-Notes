@@ -1,6 +1,6 @@
 # Git
 
-+ [.gitignore](#git-ignore)
++ [.gitignore](#git-gitignore)
 + [status](#git-status)
 + [add](#git-add)
 + [commit](#git-commit)
@@ -8,7 +8,7 @@
 + [push](#git-push)
 + [pull](#git-pull)
 
-## .gitignore <a id="git-ignore"></a>
+## <a id="git-gitignore"></a> .gitignore
 
 + Tells git to ignore files or directories that match criteria given.
 + Matches using [glob patterns](https://en.wikipedia.org/wiki/Glob_(programming)), not [regular expressions (regex)](https://en.wikipedia.org/wiki/Regular_expression)
@@ -21,22 +21,22 @@
 	!foo/bar.txt
 	```
 
-## `status` <a id="git-status"></a>
+## <a id="git-status"></a> `status`
 
 + Displays files that have differences between what git's tracking
 	+ i.e. You're tracking `foo.txt` and you add some words to it, `git status` will tell you that `foo.txt` had changes made to it
 
-## `add` <a id="git-add"></a>
+## <a id="git-add"></a> `add`
 
 + Stages new files to be tracked or new changes in currently tracked files
 + `-f` forces to add a file, regardless if it's being ignored or not
 
-## `commit` <a id="git-commit"></a>
+## <a id="git-commit"></a> `commit`
 
 + Commits/applies staged changes from `add` to index
 + `-a` only commits files that are currently being tracked (new files are not affected)
 
-## `remote` <a id="git-remote"></a>
+## <a id="git-remote"></a> `remote`
 
 + Manages remote repositories that you track
 + `add <name> <url>` adds a repo as `name` located at `url`
@@ -46,6 +46,6 @@
 + `set-url <name>` sets the `url` of a tracked repo
 + Common names are `origin` and `upstream`
 
-## `push` <a id="git-push"></a>
+## <a id="git-push"></a> `push`
 
-## `pull` <a id="git-pull"></a>
+## <a id="git-pull"></a> `pull`
