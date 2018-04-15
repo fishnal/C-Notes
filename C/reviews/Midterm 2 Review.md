@@ -630,7 +630,7 @@ We can manually manage memory using 4 methods from `<stdlib.h>`:
 
 ### <a id="clang-arrays"></a> Arrays
 
-***Arrays start at 0 ([like all arrays should...](http://www.cs.utexas.edu/users/EWD/transcriptions/EWD08xx/EWD831.html))***
+**_Arrays start at 0 (<a href="http://www.cs.utexas.edu/users/EWD/transcriptions/EWD08xx/EWD831.html" target="_blank">like all arrays should...</a>)_**
 
 Arrays in C can be made in two ways: fixed arrays/initializers and pointers.
 
@@ -756,20 +756,20 @@ Again, follow proper convention when accessing the elements.
 	+ We can null terminate strings ourselves, so do not be afraid to take advantage of it!
 + <a id="clang-string-strlen"></a> `strlen(const char *)`
 	+ Returns length of string (does not include null character)
-+ <a id="clang-string-strcpy"></a> `strcpy(const char *dest, const char *src)` and `strncpy(..., size_t n)`
++ <a id="clang-string-strcpy"></a> `strcpy(char *dest, const char *src)` and `strncpy(..., size_t n)`
 	+ Copies (at most first `n` bytes) string pointed by `src` to `dest`.
 	+ `dest` must be large enough, otherwise buffer overrun!
 	+ Null character from `src` is copied if it has it (or is within first `n` bytes)
 + <a id="clang-string-strcmp"></a> `strcmp(const char *a, const char *b)` and `strncmp(..., size_t n)`
 	+ Compares (at most first `n` bytes of) two strings; returns negative if less, positive if greater, or 0 if equal to.
-+ <a id="clang-string-strcat"></a> `strcat(const char *dest, const char *src)` and `strncat(..., size_t n)`
++ <a id="clang-string-strcat"></a> `strcat(char *dest, const char *src)` and `strncat(..., size_t n)`
 	+ Appends (at most `n` bytes from) `src` to `dest`, overwriting null terminating byte at end of `dest` and then adds a null terminator.
 	+ `dest` must be large enough, otherwise undefined behavior!
 		+ \>= `strlen(dest) + strlen(src) + 1` buffer capacity with `strcat`
 		+ \>= `strlen(dest) + n + 1` buffer capacity with `strncat`
 + <a id="clang-string-memcpy"></a> `memcpy(void *dest, const void *src, size_t n)`
 	+ Copies `n` bytes from `src` into `dest`
-	+ There memory areas shouldn't overrlap
+	+ Their memory areas shouldn't overrlap
 + <a id="clang-string-memmove"></a> `memmove(void *dest, const void *src, size_t n)`
 	+ Same as `memcpy`, but memory areas *can* overlap
 
@@ -783,7 +783,7 @@ a[0] = 'f'; /* not allowed because a is a pointer to a constant char */
 
 ### <a id="clang-io"></a> I/O
 
-Read up on format strings for both [input](http://www.cplusplus.com/reference/cstdio/scanf/) and [output](http://www.cplusplus.com/reference/cstdio/printf/). We don't need to know every single format specifier and flag.
+Read up on format strings for both <a href="http://www.cplusplus.com/reference/cstdio/scanf/" target="_blank">input</a> and <a href="http://www.cplusplus.com/reference/cstdio/printf/" target="_blank">output</a>. We don't need to know every single format specifier and flag.
 
 Here are some common input/output functions found in `stdio.h`:
 
@@ -809,16 +809,16 @@ Here are some common input/output functions found in `stdio.h`:
 
 + `fdopen(int fd, const char *mode)` same as `fopen` but takes in a file descriptor instead of a path
 + `fread(void *ptr, size_t size, size_t count, FILE *stream)` reads `count` elements (each `size` bytes long) from `stream` and stores into `ptr`
-+ `fwrite(void *ptr, size_t size, size_t count, FILE *stream)` same as `fread` but writes to `stream` from `ptr`
++ `fwrite(const void *ptr, size_t size, size_t count, FILE *stream)` same as `fread` but writes to `stream` from `ptr`
 + `fgets(char *str, int num, FILE *stream)` reads at most `num` characters (or until `EOF`) into `str` from `stream`; adds null character
-+ `fputs(const char *s, FILE *stream)` writes to `s` to `stream` w/o the null character from `s`
++ `fputs(const char *s, FILE *stream)` writes `s` to `stream` w/o the null character from `s`
 + `fscanf(FILE *stream, const char *format, ...)` like `scanf` but with a file
 + `fprintf(FILE *stream, const char *format, ...)` like `printf` but with a file
-+ `fclose(FILE *stream)` closes file stream; returns 0 if successful, `EOF` if failure
++ `fclose(FILE *stream)` closes file stream; returns 0 if successful, `EOF` ("end-of-file") if failure
 + `fflush(FILE *stream)` forces any buffered data in `stream` to be written
-+ `sscanf(const char *str, const char *format, ...)` llike `scanf` but with a string
++ `sscanf(const char *str, const char *format, ...)` like `scanf` but with a string
 
-Buffered I/O can be very efficient because we don't have to constantly make calls to the file system. Instead, we can do it short bursts/intervals. Take copying a sentence for example. With no "buffering", we would read one character, write it, and repeat until we're done. With buffering, we would read in, say, a few words, write them down, and keep on repeating.
+Buffered I/O can be very efficient because we don't have to constantly make calls to the file system. Instead, we can do it in short bursts/intervals. Take copying a sentence for example. With no "buffering", we would read one character, write it, and repeat until we're done. With buffering, we would read in, say, a few words, write them down, and keep on repeating.
 
 ### <a id="clang-enum"></a> Enumerations
 
@@ -835,11 +835,11 @@ enum { G = 1, H, I = 5} enum3;
 enum letters enum2; /* enum2 is of enumerated type "letters" */
 
 enum1 = A; /* enum1 is effectively 1 */
-enum1 = D; /* enum1 becomes 1, or A, because D=A=1 */
-enum1 = E; /* enum1 becomes 2, or B, because E=B=2 */
+enum1 = D; /* enum1 becomes 1, or B, because D=B=1 */
+enum1 = E; /* enum1 becomes 2, or C, because E=C=2 */
 enum3 = A; /* enum3 is 0, can't be any constant from the enumeration it was defined from */
 enum3 = C; /* enum3 is 2, or H */
-enum2 = E; /* enum2 is 2 */
+enum2 = E; /* enum2 is 2, or E */
 
 /* using enums as variables */
 enum boolean { false, true };
@@ -869,6 +869,8 @@ It's important to make sure the members of a structure have been properly initia
 strcpy(vishal.name, "Vishal Patel");
 vishal.age = 19;
 
+/* Assume for the below code that we can declare variables after code statements (even though our compiler flags don't let us) */
+
 /* Can't initialize the members individually by using the dot (.) operator
    and the name of the member because ANSI forbids this
  */
@@ -887,7 +889,7 @@ struct Person vishal_short = { "Vishal Patel" }; /* age is 0 */
 /* Can't do this, empty initializer */
 struct Person vishal_short_2 = { };
 
-/* Can do this though to zero everything */
+/* Can do this to zero everything */
 struct Person vishal_short_3 = { 0 };
 ```
 
@@ -897,13 +899,20 @@ Two ways of accessing the members of a structure:
 + Structure pointer operator (`->`)
 
 ```c
+struct Person vishal_good = { "Vishal Patel", 19 };
+struct Person *vishal_ptr = &vishal;
+
 printf("%d\n", vishal_good.age); /* 19 */
 printf("%s\n", vishal_quick.name); /* Vishal Patel */
 
-struct Pointer *vishal_ptr = &vishal_good;
 printf("%d\n", vishal_ptr->age); /* 19 */
 printf("%d\n", (*vishal_ptr).age); /* 19 */
 printf("%d\n", (&vishal_good)->age); /* 19 */
+
+vishal_good->age = 21; /* setting my age to 21 */
+
+printf("%d\n", vishal_ptr->age); /* 21 */
+printf("%d\n", vishal_good.age); /* 21 */
 ```
 
 We can use `typedef` to name the structure as a whole (think of this as abbreviating a really long structure name):
@@ -957,7 +966,7 @@ struct Teacher teacher = { 50 };
 struct Class class_2 = { 0 };
 
 /* Note that we can't declare class_2 as
-       class_2 = { teacher, 10 }
+      class_2 = { teacher, 10 }
    because teacher can't be computed at load time
  */
 
@@ -989,7 +998,7 @@ printf("%d\n", *wp_1.ptr);
 
 /* now let's initialize */
 wp_1.ptr = malloc(sizeof(int));
-wp_1.str = malloc(sizeof(char) * 11);
+wp_1.str = calloc(sizeof(char) * 11);
 *wp_1.ptr = 20;
 *wp_1.str = 'H';
 *(wp_1.str + 1) = 'E';
@@ -1040,7 +1049,7 @@ b.ptr = &x; /* b.ptr points to x, but a.ptr still points to y */
 
 ### <a id="clang-union"></a> Unions
 
-Unions are similar to structures, but have one big difference: the space allocated to both. The size of a structure will be the sum of the size of all it's members. The size of a union, however, will be the largest size of all it's members. Here's an example:
+Unions are similar to structures, but have one big difference: how much space is allocated to a union. The size of a structure will be the sum of the size of all it's members. The size of a union, however, will be the largest size of all it's members. Here's an example:
 
 ```c
 union Union {
@@ -1060,12 +1069,16 @@ printf("%d\n", sizeof(u)); /* 20 */
 printf("%d\n", sizeof(p)); /* 28 */
 ```
 
-This happens because unions can access only one of its members at a time, whereas structures can access any of its members at any time. Hence why the size of the union here is 20 bytes, or the largest size among all its members (the size of `name`):
+This happens because unions are only meant to access one of its members at a time, whereas structures can access any of its members at any time. Hence why the size of the union here is 20 bytes, or the largest size among all its members (the size of `name`):
 
 ```c
+/* u.name becomes HELLO */
 strcpy(u.name, "HELLO");
-/* u.name is HELLO, u.age is
 ```
+
+This doesn't mean we can't do `u.age`. But if we do that, it'll be a bit weird, predictable, but weird. Say an `int` is 4 bytes long. This means that `u.age` and `u.age2` are interpreted as the first four bytes of `HELLO`, or essentially they're simply `HELL`. In this scenario, they end up representing the decimal integer `1280066888`, or `4c4c4548` in hex.
+
+So in a general sense, unions hold data that is meant to be used by only one field. All other fields share those same bytes in that data. So when you access those other fields, C interprets those bytes for whatever the data types for those fields are. Just keep in mind, C is not changing those bytes. It's simply just saying "I'm meant to hold `x` amount of bytes, and I'll interpret them however my fields want me to."
 
 ### <a id="clang-func"></a> Functions
 
@@ -1151,7 +1164,7 @@ foo(20); /* not so ok... */
 ```
 
 are different functions.
-The former can take an arbitrary amount of arguments, while the latter will take 0 arguments (this helps explain [command line arguments](#clang-cla)).
+The former can take an arbitrary amount of arguments, while the latter will take 0 arguments.
 
 #### <a id="#clang-func-ptr"></a> Function Pointers
 
@@ -1239,7 +1252,9 @@ Buffering is an important thing to note for these standard I/O streams:
 
 ### <a id="clang-exit"></a> `exit`
 
-`exit(int status)` (from `stdlib.h`) causes the process to terminate, however it performs some calls before it does (like flushing buffered streams). `_exit(int status)` (from `unistd.h`) on the other hand skips all that stuff and goes straight to terminating the process.
+`exit(int status)` (from `stdlib.h`) causes the process to terminate, however it performs some calls before it does (like flushing buffered streams). Eventually, it calls `_exit(int)`
+
+`_exit(int status)` (from `unistd.h`) on the other hand skips all that stuff and goes straight to terminating the process.
 
 ### <a id="clang-err"></a> `err`
 
@@ -1261,7 +1276,7 @@ Linking takes symbols that are referencing in one object file/library, and resol
 Linkers, the programs responsible for linking, take machine code files as input and produces an executable object code
 
 + Machine code, or object, files usually end in `.o`
-+ Exectable object code end in `a.out` by default from `gcc`, but the name of the executable file can be changed by using the `-o` flag.
++ Exectable object code end in `a.out` by default from `gcc` on Linux (on Windows it's `a.exe`), but the name of the executable file can be changed by using the `-o` flag.
 
 For functions and global variables, `static` will indicate that the symbol should not be exported to other files. `extern` is the opposite in that someone can find that symbol elsewhere (if it were declared) or the symbol will be exported elsewhere (if it's being defined).
 
@@ -1291,7 +1306,7 @@ There isn't anything unique or special to recursion in C. But there are some pro
 	  static int prod = 1;
 
 	  if (i > 1) {
-		  prod *= i;
+        prod *= i;
 	  }
 
 	  fac(i - 1);
@@ -1304,10 +1319,10 @@ There isn't anything unique or special to recursion in C. But there are some pro
 + C supports tail recursion. That means if your recursive call is at the end of a function, C won't allocate a new stack frame for the call; it'll just reuse the current one. This makes it more memory efficient:
 	```c
 	void tail_recurse(int i) {
-		if (i > 0) {
-			printf("%d\n", i);
-			tail_recurse(i - 1);
-		}
+      if (i > 0) {
+        printf("%d\n", i);
+        tail_recurse(i - 1);
+      }
 	}
 
 	tail_recurse(5); /* prints 5 4 3 2 1 */

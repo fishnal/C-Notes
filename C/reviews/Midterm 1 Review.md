@@ -315,7 +315,7 @@ Only listing the notable ones in C that we use in class:
 + `static` localizes a symbol
 	+ A global static variable is one that can only be referenced in the same file
 	+ A global static function is one that can only be referenced by other functions in the same file
-	+ A local static variable is a static variable inside a function. It's value persists until the end of the program. 
+	+ A local static variable is a static variable inside a function. It's value persists until the end of the program.
 	```c
 	/* file.c */
 
@@ -433,7 +433,7 @@ ptr4 = &ptr3;
 *ptr4 = &y;
 ```
 
-Ok so those last few lines in the example above are some important things to take note of. 
+Ok so those last few lines in the example above are some important things to take note of.
 
 `*ptr = 20` will change the value of `x` to 20, which also effectively changes `*ptr2` and `*ptr3` to `20` because they both point to the address of `x`. We can have the compiler stop us when do we such a thing if we really don't want `*ptr2` to change since we made `ptr2` point to a constant integer. We can simply make `x` a `const int`. The compiler will stop us saying "Hey, you could possibly change the value of `x`, a constant integer, by reassigning `*ptr`!" (this error stems from the `-pedantic-errors` flag)
 
@@ -453,7 +453,7 @@ char c = *(ptr + 1); /* will get char value at 0x04 + 1 -> 0x05 */
 int *ptr2 = ...; /* say it points to 0x10 */
 int i = *(ptr2 + 2); /* gets int value at 0x14 assuming int is 4 bytes */
 
-/* this is the difference in the number of blocks, 
+/* this is the difference in the number of blocks,
    not the address themselves, so prints 2 */
 printf("%li\n", (ptr2 + 2) - ptr);
 ```
@@ -580,7 +580,8 @@ We can manually manage memory using 4 methods from `<stdlib.h>`:
 
 ### <a id="clang-arrays"></a> Arrays
 
-***Arrays start at 0 ([like all arrays should...](http://www.cs.utexas.edu/users/EWD/transcriptions/EWD08xx/EWD831.html))***
+**_Arrays start at 0 (<a href="http://www.cs.utexas.edu/users/EWD/transcriptions/EWD08xx/EWD831.html" target="_blank">like all arrays should...</a>)_**
+
 
 Arrays in C can be made in two ways: fixed arrays/initializers and pointers.
 
@@ -706,13 +707,13 @@ Again, follow proper convention when accessing the elements.
 	+ We can null terminate strings ourselves, so do not be afraid to take advantage of it!
 + `strlen(const char *)`
 	+ Returns length of string (does not include null character)
-+ `strcpy(const char *dest, const char *src)` and `strncpy(..., size_t n)`
++ `strcpy(char *dest, const char *src)` and `strncpy(..., size_t n)`
 	+ Copies (at most first `n` bytes) string pointed by `src` to `dest`.
 	+ `dest` must be large enough, otherwise buffer overrun!
 	+ Null character from `src` is copied if it has it (or is within first `n` bytes)
 + `strcmp(const char *a, const char *b)` and `strncmp(..., size_t n)`
 	+ Compares (at most first `n` bytes of) two strings; returns negative if less, positive if greater, or 0 if equal to.
-+ `strcat(const char *dest, const char *src)` and `strncat(..., size_t n)`
++ `strcat(char *dest, const char *src)` and `strncat(..., size_t n)`
 	+ Appends (at most `n` bytes from) `src` to `dest`, overwriting null terminating byte at end of `dest` and then adds a null terminator.
 	+ `dest` must be large enough, otherwise undefined behavior!
 		+ \>= `strlen(dest) + strlen(src) + 1` buffer capacity with `strcat`
@@ -728,7 +729,7 @@ a[0] = 'f'; /* not allowed because a is a pointer to a constant char */
 
 ### <a id="clang-io"></a> I/O
 
-Read up on format strings for both [input](http://www.cplusplus.com/reference/cstdio/scanf/) and [output](http://www.cplusplus.com/reference/cstdio/printf/). We don't need to know every single format specifier and flag.
+Read up on format strings for both <a href="http://www.cplusplus.com/reference/cstdio/scanf/" target="_blank">input</a> and <a href="http://www.cplusplus.com/reference/cstdio/printf/" target="_blank">output</a>. We don't need to know every single format specifier and flag.
 
 Here are some common input/output functions found in `stdio.h`:
 
@@ -753,16 +754,16 @@ Here are some common input/output functions found in `stdio.h`:
   |`a+`|append/update (creates file if DNE)
 
 + `fread(void *ptr, size_t size, size_t count, FILE *stream)` reads `count` elements (each `size` bytes long) from `stream` and stores into `ptr`
-+ `fwrite(void *ptr, size_t size, size_t count, FILE *stream)` same as `fread` but writes to `stream` from `ptr`
++ `fwrite(const void *ptr, size_t size, size_t count, FILE *stream)` same as `fread` but writes to `stream` from `ptr`
 + `fgets(char *str, int num, FILE *stream)` reads at most `num` characters (or until `EOF`) into `str` from `stream`; adds null character
-+ `fputs(const char *s, FILE *stream)` writes to `s` to `stream` w/o the null character from `s`
++ `fputs(const char *s, FILE *stream)` writes `s` to `stream` w/o the null character from `s`
 + `fscanf(FILE *stream, const char *format, ...)` like `scanf` but with a file
 + `fprintf(FILE *stream, const char *format, ...)` like `printf` but with a file
-+ `fclose(FILE *stream)` closes file stream; returns 0 if successful, `EOF` if failure
++ `fclose(FILE *stream)` closes file stream; returns 0 if successful, `EOF` ("end-of-file") if failure
 + `fflush(FILE *stream)` forces any buffered data in `stream` to be written
-+ `sscanf(const char *str, const char *format, ...)` llike `scanf` but with a string
++ `sscanf(const char *str, const char *format, ...)` like `scanf` but with a string
 
-Buffered I/O can be very efficient because we don't have to constantly make calls to the file system. Instead, we can do it short bursts/intervals. Take copying a sentence for example. With no "buffering", we would read one character, write it, and repeat until we're done. With buffering, we would read in, say, a few words, write them down, and keep on repeating.
+Buffered I/O can be very efficient because we don't have to constantly make calls to the file system. Instead, we can do it in short bursts/intervals. Take copying a sentence for example. With no "buffering", we would read one character, write it, and repeat until we're done. With buffering, we would read in, say, a few words, write them down, and keep on repeating.
 
 ### <a id="clang-enum"></a> enum
 
@@ -779,11 +780,11 @@ enum { G = 1, H, I = 5} enum3;
 enum letters enum2; /* enum2 is of enumerated type "letters" */
 
 enum1 = A; /* enum1 is effectively 1 */
-enum1 = D; /* enum1 becomes 1, or A, because D=A=1 */
-enum1 = E; /* enum1 becomes 2, or B, because E=B=2 */
+enum1 = D; /* enum1 becomes 1, or B, because D=B=1 */
+enum1 = E; /* enum1 becomes 2, or C, because E=C=2 */
 enum3 = A; /* enum3 is 0, can't be any constant from the enumeration it was defined from */
 enum3 = C; /* enum3 is 2, or H */
-enum2 = E; /* enum2 is 2 */
+enum2 = E; /* enum2 is 2, or E */
 
 /* using enums as variables */
 enum boolean { false, true };
@@ -813,13 +814,15 @@ It's important to make sure the members of a structure have been properly initia
 strcpy(vishal.name, "Vishal Patel");
 vishal.age = 19;
 
-/* Can't initialize the members individually by using the dot (.) operator 
+/* Assume for the below code that we can declare variables after code statements (even though our compiler flags don't let us) */
+
+/* Can't initialize the members individually by using the dot (.) operator
    and the name of the member because ANSI forbids this
  */
 struct Person vishal_bad = { .name = "Vishal Patel", .age = 19 };
 
 /* Can initialize members in order by giving appropriately-typed values.
-   This is more concise, but isn't flexible because it relies on the 
+   This is more concise, but isn't flexible because it relies on the
    ordering of the definition of the struct. What if I swapped the lines
    of age and name?
  */
@@ -831,7 +834,7 @@ struct Person vishal_short = { "Vishal Patel" }; /* age is 0 */
 /* Can't do this, empty initializer */
 struct Person vishal_short_2 = { };
 
-/* Can do this though to zero everything */
+/* Can do this to zero everything */
 struct Person vishal_short_3 = { 0 };
 ```
 
@@ -841,13 +844,20 @@ Two ways of accessing the members of a structure:
 + Structure pointer operator (`->`)
 
 ```c
+struct Person vishal_good = { "Vishal Patel", 19 };
+struct Person *vishal_ptr = &vishal;
+
 printf("%d\n", vishal_good.age); /* 19 */
 printf("%s\n", vishal_quick.name); /* Vishal Patel */
 
-struct Pointer *vishal_ptr = &vishal_good;
 printf("%d\n", vishal_ptr->age); /* 19 */
 printf("%d\n", (*vishal_ptr).age); /* 19 */
 printf("%d\n", (&vishal_good)->age); /* 19 */
+
+vishal_good->age = 21; /* setting my age to 21 */
+
+printf("%d\n", vishal_ptr->age); /* 21 */
+printf("%d\n", vishal_good.age); /* 21 */
 ```
 
 We can use `typedef` to name the structure as a whole (think of this as abbreviating a really long structure name):
@@ -900,7 +910,7 @@ struct Class class = { 0 };
 struct Teacher teacher = { 50 };
 struct Class class_2 = { 0 };
 
-/* Note that we can't declare class_2 as 
+/* Note that we can't declare class_2 as
        class_2 = { teacher, 10 }
    because teacher can't be computed at load time
  */
@@ -933,7 +943,7 @@ printf("%d\n", *wp_1.ptr);
 
 /* now let's initialize */
 wp_1.ptr = malloc(sizeof(int));
-wp_1.str = malloc(sizeof(char) * 11);
+wp_1.str = calloc(sizeof(char) * 11);
 *wp_1.ptr = 20;
 *wp_1.str = 'H';
 *(wp_1.str + 1) = 'E';
@@ -984,7 +994,7 @@ b.ptr = &x; /* b.ptr points to x, but a.ptr still points to y */
 
 ### <a id="clang-union"></a> Unions
 
-Unions are similar to structures, but have one big difference: the space allocated to both. The size of a structure will be the sum of the size of all it's members. The size of a union, however, will be the largest size of all it's members. Here's an example:
+Unions are similar to structures, but have one big difference: how much space is allocated to a union. The size of a structure will be the sum of the size of all it's members. The size of a union, however, will be the largest size of all it's members. Here's an example:
 
 ```c
 union Union {
@@ -1004,12 +1014,17 @@ printf("%d\n", sizeof(u)); /* 20 */
 printf("%d\n", sizeof(p)); /* 28 */
 ```
 
-This happens because unions can access only one of its members at a time, whereas structures can access any of its members at any time. Hence why the size of the union here is 20 bytes, or the largest size among all its members (the size of `name`):
+This happens because unions are only meant to access one of its members at a time, whereas structures can access any of its members at any time. Hence why the size of the union here is 20 bytes, or the largest size among all its members (the size of `name`):
 
 ```c
+/* u.name becomes HELLO */
 strcpy(u.name, "HELLO");
-/* u.name is HELLO, u.age is 
 ```
+
+This doesn't mean we can't do `u.age`. But if we do that, it'll be a bit weird, predictable, but weird. Say an `int` is 4 bytes long. This means that `u.age` and `u.age2` are interpreted as the first four bytes of `HELLO`, or essentially they're simply `HELL`. In this scenario, they end up representing the decimal integer `1280066888`, or `4c4c4548` in hex.
+
+So in a general sense, unions hold data that is meant to be used by only one field. All other fields share those same bytes in that data. So when you access those other fields, C interprets those bytes for whatever the data types for those fields are. Just keep in mind, C is not changing those bytes. It's simply just saying "I'm meant to hold `x` amount of bytes, and I'll interpret them however my fields want me to."
+
 
 ### <a id="clang-func"></a> Functions
 
@@ -1095,7 +1110,7 @@ foo(20); /* not so ok... */
 ```
 
 are different functions.
-The former can take an arbitrary amount of arguments, while the latter will take 0 arguments (this helps explain [command line arguments](#clang-cla)).
+The former can take an arbitrary amount of arguments, while the latter will take 0 arguments.
 
 #### <a id="#clang-func-ptr"></a> Function Pointers
 
@@ -1178,7 +1193,7 @@ Linking takes symbols that are referencing in one object file/library, and resol
 Linkers, the programs responsible for linking, take machine code files as input and produces an executable object code
 
 + Machine code, or object, files usually end in `.o`
-+ Exectable object code end in `a.out` by default from `gcc`, but the name of the executable file can be changed by using the `-o` flag.
++ Exectable object code end in `a.out` by default from `gcc` on Linux (on Windows it's `a.exe`), but the name of the executable file can be changed by using the `-o` flag.
 
 For functions and global variables, `static` will indicate that the symbol should not be exported to other files. `extern` is the opposite in that someone can find that symbol elsewhere (if it were declared) or the symbol will be exported elsewhere (if it's being defined).
 
@@ -1322,7 +1337,7 @@ This approach applies to basically any negative integer of an `n`-bit number.
 	+ `p <expression>` prints an expression (very useful with memory addresses)
 	+ `n <number of steps>` executes (the next `number of steps`) steps/statements/calls
 	+ `s` steps into a function/call
-	+ `c` continues to next breakpoint or termination (normal or abnormal) 
+	+ `c` continues to next breakpoint or termination (normal or abnormal)
 	+ `where` see the stack frame
 	+ `frame <frame number>` changes stack frame
 	+ `backtrace [count]` prints backtrace of all stack frames, or innermost `count` frames
