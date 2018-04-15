@@ -1,4 +1,4 @@
-# CMSC 216H Midterm #1 Review
+# CMSC 216H Midterm #2 Review
 
 + [Unix Commands](#unix)
 	+ [`cp`](#unix-cp)
@@ -10,6 +10,10 @@
 	+ [`diff`](#unix-diff)
 	+ [`touch`](#unix-touch)
 	+ [`gcc`](#unix-gcc)
+	+ [`rmdir`](#unix-rmdir)
+	+ [`tar`](#unix-tar)
+	+ [`grep`](#unix-grep)
+	+ [`chmod`](#unix-chmod)
 + [C Specifics](#clang)
 	+ [General Info](#clang-info)
 	+ [Data Types](#clang-datatypes)
@@ -28,19 +32,42 @@
 	+ [Dynamic Memory Allocation](#clang-dynamicmem)
 		+ [Stack](#clang-dynamicmem-stack)
 		+ [Heap](#clang-dynamicmem-heap)
+		+ [`malloc`](#clang-dynamicmem-malloc)
+		+ [`calloc`](#clang-dynamicmem-calloc)
+		+ [`realloc`](#clang-dynamicmem-realloc)
+		+ [`free`](#clang-dynamicmem-free)
 	+ [Arrays](#clang-arrays)
 		+ [Multi Dimensional Arrays](#clang-arrays-multidim)
 	+ [Strings](#clang-string)
+		+ [`strlen`](#clang-string-strlen)
+		+ [`strcpy`](#clang-string-strcpy)
+		+ [`strcmp`](#clang-string-strcmp)
+		+ [`strcat`](#clang-string-strcat)
+		+ [`memcpy`](#clang-string-memcpy)
+		+ [`memmove`](#clang-string-memmove)
 	+ [I/O](#clang-io)
-	+ [enum](#clang-enum)
+	+ [Enumerations](#clang-enum)
 	+ [Structures](#clang-struct)
 	+ [Unions](#clang-union)
 	+ [Functions](#clang-func)
 		+ [Function Pointers](#clang-func-ptr)
+	+ [Standard I/O](#clang-stdio)
+	+ [`exit`](#clang-exit)
+	+ [`err`](#clang-err)
+	+ [`perror`](#clang-perror)
 	+ [Linkage](#clang-linkage)
 	+ [Command Line Arguments](#clang-cla)
 	+ [Recursion](#clang-recursion)
++ [Linked Lists](#linked-lists)
++ [AVR Assembly](#avr)
+	+ [Registers](#avr-registers)
+	+ [Pointer Registers](#avr-ptr-registers)
+	+ [Functions](#avr-funcs)
+	+ [SRAM](#avr-sram)
+	+ [Recursion](#avr-recursion)
+	+ [Instructions](#avr-instructions)
 + [Memory Maps](#memmap)
++ [Big Endian vs. Little Endian](#endian)
 + [Bitwise Operators](#bitwiseops)
 	+ [One's and Two's Complement](#bitwiseops-complements)
 + [Debuggers](#debug)
@@ -92,6 +119,29 @@ ___
 	+ `-c` compiles but does not link (output file ends with `.o`)
 	+ `-o <FILE>` places output file in specified file
 	+ `-g` compiles with debugging symbols
++ <a id="unix-rmdir"></a> `rmdir` removes empty directories
+	+ Usage: `rmdir [opts] <dir>`
+	+ `-p|--parents` removes directory and it's ancestors (if they're also empty)
++ <a id="unix-tar"></a> `tar` stores and extracts files from a tape archive
+	+ Usage: `tar [opts]`
+	+ `-c` creates a new archive
+	+ `-z` indicates the gzip compression method
+	+ `-f` indicates the archive file
+	+ `-x` extracts files from an archive
+	+ Creating a compressed `.tar.gz` file: `tar -czf dest.tar.gz srcdir`
+	+ Extracting a compressed `.tar.gz` file: `tar -xzf src.tar.gz`
++ <a id="#unix-grep"></a> `grep` searches a file for a pattern
+	+ Usage: `grep [opts] <pattern> <file>`
+	+ Supports regular expressions for patterns
++ <a id="unix-chmod"></a> `chmod` changes the file mode bits (basically it's permissions)
+	+ Usage: `chmod <permission> <file>`
+	+ Permission is provided in as a 9-bit octal number or in `rwx` format
+		+ `chmod 777 file` provides all permissions to everyone because 7 in octal is 111 in binary
+		+ `chmod r---w---x file` provides read to owner, write to group, and x to others
+	+ First 3 bits modify the owner's permission
+	+ Second 3 bits modify group's permission
+	+ Third 3 bits modify other's permission
+	+ Each bit in the 3-bit sequence represents read, write, and execute permissions respectively
 
 ## <a id="clang"></a> C Specifics
 
@@ -315,7 +365,7 @@ Only listing the notable ones in C that we use in class:
 + `static` localizes a symbol
 	+ A global static variable is one that can only be referenced in the same file
 	+ A global static function is one that can only be referenced by other functions in the same file
-	+ A local static variable is a static variable inside a function. It's value persists until the end of the program. 
+	+ A local static variable is a static variable inside a function. It's value persists until the end of the program.
 	```c
 	/* file.c */
 
@@ -433,7 +483,7 @@ ptr4 = &ptr3;
 *ptr4 = &y;
 ```
 
-Ok so those last few lines in the example above are some important things to take note of. 
+Ok so those last few lines in the example above are some important things to take note of.
 
 `*ptr = 20` will change the value of `x` to 20, which also effectively changes `*ptr2` and `*ptr3` to `20` because they both point to the address of `x`. We can have the compiler stop us when do we such a thing if we really don't want `*ptr2` to change since we made `ptr2` point to a constant integer. We can simply make `x` a `const int`. The compiler will stop us saying "Hey, you could possibly change the value of `x`, a constant integer, by reassigning `*ptr`!" (this error stems from the `-pedantic-errors` flag)
 
@@ -453,7 +503,7 @@ char c = *(ptr + 1); /* will get char value at 0x04 + 1 -> 0x05 */
 int *ptr2 = ...; /* say it points to 0x10 */
 int i = *(ptr2 + 2); /* gets int value at 0x14 assuming int is 4 bytes */
 
-/* this is the difference in the number of blocks, 
+/* this is the difference in the number of blocks,
    not the address themselves, so prints 2 */
 printf("%li\n", (ptr2 + 2) - ptr);
 ```
@@ -528,15 +578,11 @@ Dynamic memory allocation refers to manual memory management in C. So what are t
 
 We can manually manage memory using 4 methods from `<stdlib.h>`:
 
-+ `malloc(size_t size) -> void *` allocates `size` bytes and returns pointer to allocated memory; memory is **not** initialized
++ <a id="clang-dynamicmem-malloc"></a> `malloc(size_t size) -> void *` allocates `size` bytes and returns pointer to allocated memory; memory is **not** initialized
 	+ Passing in `0` returns either `NULL` or unique pointer value that can later be freed
-+ `calloc(size_t nmemb, size_t size) -> void *` allocates memory for an array of `nmemb` elements of `size` bytes each and returns pointer to allocated memory; memory is initialized to `0`
++ <a id="clang-dynamicmem-calloc"></a> `calloc(size_t nmemb, size_t size) -> void *` allocates memory for an array of `nmemb` elements of `size` bytes each and returns pointer to allocated memory; memory is initialized to `0`
 	+ Passing in `0` for anything acts like `malloc(0)`
-+ `free(void *ptr)` frees memory space pointed to by `ptr`, which must have originated from `malloc`, `calloc`, or `realloc`.
-	+ If `ptr` is `NULL`, nothing happens
-	+ Be wary of double-freeing
-	+ Be wary of dangling pointers (pointers freed but not nulled)
-+ `realloc(void *ptr, size_t size)` changes size of memory block pointed to by `ptr` to `size` bytes
++ <a id="clang-dynamicmem-realloc"></a> `realloc(void *ptr, size_t size) -> void *` changes size of memory block pointed to by `ptr` to `size` bytes
 	+ `ptr` must have originated from `malloc`, `calloc`, or `realloc`
 	+ Extra bytes allocated are **not** initialized
 	+ If `ptr` is `NULL`, call is equivalent to `malloc(size)`
@@ -544,6 +590,10 @@ We can manually manage memory using 4 methods from `<stdlib.h>`:
 	+ If the area pointed to by `ptr` was moved, `free(ptr)` is done
 	+ If we allocate 20 bytes but read in 10, shrinks to 10
 	+ If we allocate 20 bytes but read in 30, grows to 30. Note that it may move memory location if it encounters buffer overrun
++ <a id="clang-dynamicmem-free"></a> `free(void *ptr)` frees memory space pointed to by `ptr`, which must have originated from `malloc`, `calloc`, or `realloc`.
+	+ If `ptr` is `NULL`, nothing happens
+	+ Be wary of double-freeing
+	+ Be wary of dangling pointers (pointers freed but not nulled)
 
 #### The DON'TS
 
@@ -704,19 +754,24 @@ Again, follow proper convention when accessing the elements.
 + If you have want a `char *` to be at most 10 characters long, what you really mean is at most 10 characters long *plus* the null character. So what you need to do is allocate space for 11 characters (the last character should be the null character).
 + If string is not null terminated, then C keeps on printing characters until it finds one (so that gets pretty weird).
 	+ We can null terminate strings ourselves, so do not be afraid to take advantage of it!
-+ `strlen(const char *)`
++ <a id="clang-string-strlen"></a> `strlen(const char *)`
 	+ Returns length of string (does not include null character)
-+ `strcpy(const char *dest, const char *src)` and `strncpy(..., size_t n)`
++ <a id="clang-string-strcpy"></a> `strcpy(const char *dest, const char *src)` and `strncpy(..., size_t n)`
 	+ Copies (at most first `n` bytes) string pointed by `src` to `dest`.
 	+ `dest` must be large enough, otherwise buffer overrun!
 	+ Null character from `src` is copied if it has it (or is within first `n` bytes)
-+ `strcmp(const char *a, const char *b)` and `strncmp(..., size_t n)`
++ <a id="clang-string-strcmp"></a> `strcmp(const char *a, const char *b)` and `strncmp(..., size_t n)`
 	+ Compares (at most first `n` bytes of) two strings; returns negative if less, positive if greater, or 0 if equal to.
-+ `strcat(const char *dest, const char *src)` and `strncat(..., size_t n)`
++ <a id="clang-string-strcat"></a> `strcat(const char *dest, const char *src)` and `strncat(..., size_t n)`
 	+ Appends (at most `n` bytes from) `src` to `dest`, overwriting null terminating byte at end of `dest` and then adds a null terminator.
 	+ `dest` must be large enough, otherwise undefined behavior!
 		+ \>= `strlen(dest) + strlen(src) + 1` buffer capacity with `strcat`
 		+ \>= `strlen(dest) + n + 1` buffer capacity with `strncat`
++ <a id="clang-string-memcpy"></a> `memcpy(void *dest, const void *src, size_t n)`
+	+ Copies `n` bytes from `src` into `dest`
+	+ There memory areas shouldn't overrlap
++ <a id="clang-string-memmove"></a> `memmove(void *dest, const void *src, size_t n)`
+	+ Same as `memcpy`, but memory areas *can* overlap
 
 ```c
 const char *a = "hello";
@@ -743,15 +798,16 @@ Here are some common input/output functions found in `stdio.h`:
 	```
 + `fopen(const char *filename, const char *mode)` opens up a file in a certain mode
 
-  |Mode|Description|
-  |:-:|:-|
-  |`r`|read|
-  |`w`|overwrite (existing contents discarded; creates file if DNE)|
-  |`a`|append (creates file if DNE)|
-  |`r+`|read/update (opens for update both input and output)
-  |`w+`|overwrite/update (existing contents discarded; creates file if DNE)
-  |`a+`|append/update (creates file if DNE)
+|Mode|Description|
+|:-:|:-|
+|`r`|read|
+|`w`|overwrite (existing contents discarded; creates file if DNE)|
+|`a`|append (creates file if DNE)|
+|`r+`|read/update (opens for update both input and output)
+|`w+`|overwrite/update (existing contents discarded; creates file if DNE)
+|`a+`|append/update (creates file if DNE)
 
++ `fdopen(int fd, const char *mode)` same as `fopen` but takes in a file descriptor instead of a path
 + `fread(void *ptr, size_t size, size_t count, FILE *stream)` reads `count` elements (each `size` bytes long) from `stream` and stores into `ptr`
 + `fwrite(void *ptr, size_t size, size_t count, FILE *stream)` same as `fread` but writes to `stream` from `ptr`
 + `fgets(char *str, int num, FILE *stream)` reads at most `num` characters (or until `EOF`) into `str` from `stream`; adds null character
@@ -764,7 +820,7 @@ Here are some common input/output functions found in `stdio.h`:
 
 Buffered I/O can be very efficient because we don't have to constantly make calls to the file system. Instead, we can do it short bursts/intervals. Take copying a sentence for example. With no "buffering", we would read one character, write it, and repeat until we're done. With buffering, we would read in, say, a few words, write them down, and keep on repeating.
 
-### <a id="clang-enum"></a> enum
+### <a id="clang-enum"></a> Enumerations
 
 + Represents values across a series of named constants
 + Each constant is of type `int`
@@ -813,13 +869,13 @@ It's important to make sure the members of a structure have been properly initia
 strcpy(vishal.name, "Vishal Patel");
 vishal.age = 19;
 
-/* Can't initialize the members individually by using the dot (.) operator 
+/* Can't initialize the members individually by using the dot (.) operator
    and the name of the member because ANSI forbids this
  */
 struct Person vishal_bad = { .name = "Vishal Patel", .age = 19 };
 
 /* Can initialize members in order by giving appropriately-typed values.
-   This is more concise, but isn't flexible because it relies on the 
+   This is more concise, but isn't flexible because it relies on the
    ordering of the definition of the struct. What if I swapped the lines
    of age and name?
  */
@@ -900,7 +956,7 @@ struct Class class = { 0 };
 struct Teacher teacher = { 50 };
 struct Class class_2 = { 0 };
 
-/* Note that we can't declare class_2 as 
+/* Note that we can't declare class_2 as
        class_2 = { teacher, 10 }
    because teacher can't be computed at load time
  */
@@ -1008,7 +1064,7 @@ This happens because unions can access only one of its members at a time, wherea
 
 ```c
 strcpy(u.name, "HELLO");
-/* u.name is HELLO, u.age is 
+/* u.name is HELLO, u.age is
 ```
 
 ### <a id="clang-func"></a> Functions
@@ -1166,6 +1222,33 @@ printf("%p\n", (void *) foo_func_ptr); /* NOT ALLOWED */
 
 Function pointers are useful when sorting a list. Take, for example, a function that needs to sort a list of arbitrary objects. These objects could be integers, strings, or even some random struct that no sane person would think of designing. A generalized sorting function (say one that implements the selection sort algorithm) can't predict every kind of object it needs to be able to sort (hence why its *generalized*). It should only need to worry about determining when an object is greater than, less than, or equal to another object. So in order to generalize this sorting function, it takes in a function pointer that acts as the comparator.
 
+### <a id="clang-stdio"></a> Standard I/O
+
+We have three standard I/O streams:
+
++ `stdin` is standard input stream
++ `stdout` is standard output stream
++ `stderr` is standard error stream
+
+All of the streams are of the type `FILE *`, so they can be used in various other functions.
+
+Buffering is an important thing to note for these standard I/O streams:
+
++ `stdout` is line-buffered *when pointed to a terminal*. This means some lines may not appear until `fflush` or `exit` is called.
++ `stderr` is not buffered, so flushing won't really have an effect here
+
+### <a id="clang-exit"></a> `exit`
+
+`exit(int status)` (from `stdlib.h`) causes the process to terminate, however it performs some calls before it does (like flushing buffered streams). `_exit(int status)` (from `unistd.h`) on the other hand skips all that stuff and goes straight to terminating the process.
+
+### <a id="clang-err"></a> `err`
+
+`err(int eval, const char *fmt, ...)` (from `err.h`) displays a formatted error message on `stderr`, and then exits with a provided value.
+
+### <a id="clang-perror"></a> `perror`
+
+`perror(const char *s)` (from `stdio.h`) prints a message to `stderr`. So this is similar to `err(int)`, but it doesn't exit.
+
 ### <a id="clang-linkage"></a> Linkage
 
 Recall:
@@ -1197,7 +1280,7 @@ int main(int argc, char *argv[]) { ... }
 	+ This can allow us to figure out from which file the program was executed from
 	+ `argv` can also be a `char **`
 
-### <a id="clang-recursion"></a> Recursion **[needs to be peer reviewed]**
+### <a id="clang-recursion"></a> Recursion
 
 There isn't anything unique or special to recursion in C. But there are some properties of C that you can take advantage of:
 
@@ -1234,9 +1317,156 @@ There isn't anything unique or special to recursion in C. But there are some pro
 	   tail_recurse(int) */
 	```
 
+## <a id="avr"></a> AVR Assembly
+
+### <a id="avr-registers"></a> Registers
+
++ A register is one byte long (8 bits)
++ *words* are two registers next to each other (i.e. `r1:0` or `r25:24`)
++ There are 32 registers in AVR assembly, from `r0` to `r31`
++ `r1` is known as the zero register (because `r0` wouldn't make any sense to be the zero register)
+
+### <a id="avr-ptr-registers"></a> Pointer Registers
+
++ Special register pairs (so special that they have their own short names)
+	+ `r27:r26 -> X`
+	+ `r29:r28 -> Y`
+	+ `r31:r30 -> Z`
+	+ Can reference higher byte of the pair by using `H` and lower using `L`
+		+ i.e. `ldi YH, hi(256)` (stores hi 8 bits of 256 into higher byte of `Y`, or effectively into `r29`)
++ `ld` read access for pointer registers, `st` write access for pointer registers
++ `X` simply reads/writes from the address `X`, pointer doesn't change
+	+ `ld r1, x` or `st x, r1`
++ `X+` reads/writes from/to address `X` then increments pointer forward by one
+	+ `ld r1, x+` or `st x+, r1`
++ `-X` first decrement pointer by one then read/write from/to new address
+	+ `ld r1, -x` or `st -x, r1`
++ Note: you can use `Y` or `Z` in place of `X`
+
+### <a id="avr-funcs"></a> Functions
+
++ Calling functions via `call` creates a new stack frame
+	+ Do NOT confuse this with jumping to labels.
++ When calling and writing functions, be wary of callee-save and caller-save registers:
+	+ Caller-save `r18-r27;r30-r31`: saved by whoever called this function, so this function can freely change these
+	+ Callee-save `r2-r17; r28-r29`: saved by the function that's called, so the caller should expect these to have to the same values after the function returns
++ Be wary of `r0` and `r1`:
+	+ `r0` is a garbage like register, so anything can be in there. Don't expect any function to be considerate of what you put in there. With actual reasoning, when multiplying two registers, the product is stored in `r1:0`. This is because the product of two 8-bit numbers can be 16-bits. These registers are meant to be messed around with (well not so much `r1`, but more on that later), so it's safer for the program to store the product in here.
+	+ `r1` is the zero register. So if this gets modified in any way whatsoever, you need to make sure you clear this register before leaving your subroutine. Everyone's assuming that `r1` will be 0 when they work with it. So if you multiply, remember to clear `r1` after you're done with the product.
++ Parameters are passed via `r25` to `r8` (left to right)
+
+	```c
+	uint8_t function(uint8_t i, uint8_t j);
+	/* i would be in `r25:r24` (w/8-bit value in `r24`) */
+	/* j would be in `r23:r22` (w/8-bit value in `r22`) */
+	```
+
+	+ If we have many parameters, then they're pushed onto the stack
+
++ Return values are stored in registers `r25:18` depending on how big the return value is
+	+ 8-bit: `r24`
+	+ 16-bit: `r24-r25`
+	+ 32-bit: `r22-r25`
+	+ 64-bit: `r18-r25`
+
+### <a id="avr-sram"></a> SRAM
+
++ Static RAM (hence **S**RAM)
++ Useful for pushing variables to stack
+	+ Contents of a register (caller-save registers in particular)
+	+ Return address prior or after a subroutine
++ Useful for recursion
+
+### <a id="avr-recursion"></a> Recursion
+
++ Before calling a recursive function, save any registers you will need to use (especially caller-save ones)  after the recursion finishes.
++ Make sure you write your base cases properly
+	+ There's no less than or equal to, there's only less than
+	+ No greater than, only greater than or equal to
+
+## <a id="linked-lists"></a> Linked Lists
+
+Linked lists can get a bit trickier in C. Because they're variable in size, we have to rely on pointers and memory allocation. Creating nodes isn't terribly difficult so long as you properly allocate memory and change the fields in the node struct.
+
+Removing a single node requires a bit more effort on your side. You need to have a previous and current node pair. The current node is the one you want to remove, where the previous node is the node that links to the current node. Before removing current, make sure you set previous' next link to current's next, and then remove current. When removing current, you need to:
+
++ Null the node's next link
++ Free all the data associated with the node
++ Free the node itself
+
+As for doubly linked lists, make sure you update the links properly for the next and previous links.
+
+Clearing a list is where it can get annoying. Recursively clearing the list isn't a bad idea, but it's how we get rid of the nodes is the complication. We need to make sure we free them as we remove them, but you also can't free nodes that you're going to need after you bubble up your recursion. Here's the trick:
+
++ Recurse towards the end of the list
++ Null the node's next link
++ Free all the data associated with the node
++ Free the node itself
++ Bubble back up
+
+That's with singly linked lists though. Doubly linked lists require a bit more work. We can start with either side of the list since it's doubly linked, but let's stick with recursing to the end:
+
++ Null both the node's next and previous links
++ Free the data associated with the node
++ Free the node itself
++ Bubble back up
+
+Make sure you null any "head" or "tail" variables you have in your linked list struct.
+
+### <a id="avr-instructions"></a> Instructions
+
+Some common instructions used in my class (instructions are not case-sensitive). The descriptions aren't provided, but you can learn more about them <a href="https://www.microchip.com/webdoc/avrassembler/avrassembler.wb_instruction_list.html" target="_blank">here.</a>
+
++ `rd` refers to destination register
++ `rr` refers to a source register
++ `k` is a constant
++ `C` is the carry flag/bit
+
+|Instruction|Syntax|Operation|Registers|Notes|
+|:-:|:-|:-|:-|:-|
+|`INC`|`inc rd`|`rd += 1`|ALL||
+|`DEC`|`dec rd`|`rd -= 1`|ALL||
+|`CLR`|`clr rd`|`rd = 0`|ALL||
+|`JMP`|`jmp label`||||
+|`CALL`|`call subroutine`||||
+|`RET`|`ret`||||
+|`PUSH`|`push rr`||ALL||
+|`POP`|`pop rd`||ALL||
+|`ADD`|`add rd, rr`|`rd += rr`|ALL||
+|`ADC`|`adc rd, rr`|`rd += rr + C`|ALL||
+|`ADIW`|`adiw rd, k`|`rd += k`|24,26,28,30|even registers|
+|`SUB`|`sub rd, rr`|`rd -= rr`|ALL||
+|`SBC`|`sbc rd, rr`|`rd -= rr - C`|ALL||
+|`SUBI`|`subi rd, k`|`rd -= k`|16-31||
+|`SBCI`|`sbci rd, k`|`rd -= k - C`|16-31||
+|`SBIW`|`sbiw rd, k`|`rd -= k`|24,26,28,30|even registers|
+|`MUL`|`mul rd, rr`|`r1:0 = rd * rr`|ALL|unsigned|
+|`MULS`|`muls rd, rr`|`r1:0 = rd * rr`|16-31|signed|
+|`LSL`|`lsl rd`|`rd <<= 1`|ALL|unsigned, no rotation|
+|`LSR`|`lsr rd`|`rd >>= 1`|ALL|unsigned, no rotation|
+|`ROL`|`rol rd`|`rd <<= 1`|ALL|unsigned, rotation|
+|`ROR`|`ror rd`|`rd >>= 1`|ALL|unsigned, rotation|
+|`ARS`|`asr rd`|`rd >>= 1`|ALL|signed, no rotation|
+|CP|`cp rd, rr`|`rd - rr`|ALL||
+|CPC|`cpc rd, rr`|`rd - rr - C`|ALL||
+|CPI|`cpi rd, k`|`rd - k`|ALL||
+|BREQ|`breq label`||||
+|BRNE|`brne label`||||
+|BRGE|`brge label`|||signed|
+|BRSH|`brsh label`|||unsigned
+|BRLT|`brlt label`|||signed|
+|BRLO|`brlo label`|||unsigned|
+|MOV|`mov rd, rr`|`rd = rr`|ALL||
+|MOVW|`movw rd, rr`|`rd+1:rd = rr+1:rr`|ALL|even registers|
+|LDI|`ldi rd, k`|`rd = k`|16-31||
+|LD|`ld rd, -(XYZ)+`|`rd = --*(XYZ)++`|X,Y,Z|pre-dec, none, post-inc|
+|ST|`st -(XYZ)+, rr`|`--*(XYZ)++ = rr`|X,Y,Z|pre-dec, none, post-inc|
+
+
 ## <a id="memmap"></a> Memory Maps
 
-Don't really know how to explain memory maps, so uh, just refer to [this example](http://www.cs.umd.edu/class/spring2018/cmsc216/exams/exam1/MemoryMapExample.pdf).
+Don't really know how to explain memory maps, so uh, just refer to <a href="http://www.cs.umd.edu/class/spring2018/cmsc216/exams/exam1/MemoryMapExample.pdf" target="_blank">this example.</a>
+
 Tips:
 
 + Be wary of pointers and what they point to (to be honest would just triple check them).
@@ -1246,16 +1476,20 @@ Tips:
 + Indicate when you have `NULL` values either with `NULL` or the ground symbol.
 + Take up all the space you need; the more space you have for your memory map, the more cleaner your map can look.
 
+## <a id="endian"></a> Big Endian vs. Little Endian
+
+The difference is what pattern the bytes are stored in memory. **Big Endian (BE)** means that the **most significant byte (MSB)** is stored first. **Little Endian (LE)** is the opposite: when the **least significant byte (LSB)** is stored first. Say we want to represent `1234` in hex, which is `0x04D2` (we're storing this in 2 bytes). In BE, we would store `0x04` and then `0xD2`. In LE, we'd do the opposite. That's because the MSB in `1234` is `0x04`, and the LSB is `0xD2`.
+
 ## <a id="bitwiseops"></a> Bitwise Operators
 
 |Operator|Name|Type|Description|Example|
 |:-:|:-:|:-:|:-|:-|
-|`&`|AND|binary|true if both true|`3&2 = 2`|
-|`\|`|OR|binary|true if one true|`3\|2 = 3`|
-|`^`|XOR|binary|true if one true and one false|`3^2 = 1`|
-|`~`|NOT|unary|true if false|`~3 = 0` (assuming 2-bit number)|
-|`>>`|right shift|binary|shifts a number `n` bits to the right (divides and truncates by 2<sup>`n`</sup>)|`9>>3 = 1`|
-|`<<`|left shift|binary|shifts a number `n` bits to the left (multiplies by 2<sup>`n`</sup>)|`9<<3 = 72`|
+|&|AND|binary|true if both true|`3 AND 2 = 2`|
+|&#124;|OR|binary|true if one true|`3 OR 2 = 3`|
+|^|XOR|binary|true if one true and one false|`3 XOR 2 = 1`|
+|~|NOT|unary|true if false|`NOT 3 = 0` (assuming 2-bit number)|
+|>>|right shift|binary|shifts a number `n` bits to the right (divides and truncates by 2<sup>`n`</sup>)|`9 RSHIFT 3 = 1`|
+|<<|left shift|binary|shifts a number `n` bits to the left (multiplies by 2<sup>`n`</sup>)|`9 LSHIFT 3 = 72`|
 
 **Note:** Do not confuse the bitwise operators for the boolean operators!
 
@@ -1322,7 +1556,7 @@ This approach applies to basically any negative integer of an `n`-bit number.
 	+ `p <expression>` prints an expression (very useful with memory addresses)
 	+ `n <number of steps>` executes (the next `number of steps`) steps/statements/calls
 	+ `s` steps into a function/call
-	+ `c` continues to next breakpoint or termination (normal or abnormal) 
+	+ `c` continues to next breakpoint or termination (normal or abnormal)
 	+ `where` see the stack frame
 	+ `frame <frame number>` changes stack frame
 	+ `backtrace [count]` prints backtrace of all stack frames, or innermost `count` frames

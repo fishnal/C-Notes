@@ -5,6 +5,9 @@
 + [Functions](#avr-funcs)
 + [SRAM](#avr-sram)
 + [Recursion](#avr-recursion)
++ [Instructions](#avr-instructions)
+
+___
 
 ## <a id="avr-registers"></a> Registers
 
@@ -70,3 +73,52 @@
 + Make sure you write your base cases properly
 	+ There's no less than or equal to, there's only less than
 	+ No greater than, only greater than or equal to
+
+## <a id="avr-instructions"></a> Instructions
+
+Some common instructions used in my class (instructions are not case-sensitive). The descriptions aren't provided, but you can learn more about them <a href="https://www.microchip.com/webdoc/avrassembler/avrassembler.wb_instruction_list.html" target="_blank">here.</a>
+
++ `rd` refers to destination register
++ `rr` refers to a source register
++ `k` is a constant
++ `C` is the carry flag/bit
+
+|Instruction|Syntax|Operation|Registers|Notes|
+|:-:|:-|:-|:-|:-|
+|`INC`|`inc rd`|`rd += 1`|ALL||
+|`DEC`|`dec rd`|`rd -= 1`|ALL||
+|`CLR`|`clr rd`|`rd = 0`|ALL||
+|`JMP`|`jmp label`||||
+|`CALL`|`call subroutine`||||
+|`RET`|`ret`||||
+|`PUSH`|`push rr`||ALL||
+|`POP`|`pop rd`||ALL||
+|`ADD`|`add rd, rr`|`rd += rr`|ALL||
+|`ADC`|`adc rd, rr`|`rd += rr + C`|ALL||
+|`ADIW`|`adiw rd, k`|`rd += k`|24,26,28,30|even registers|
+|`SUB`|`sub rd, rr`|`rd -= rr`|ALL||
+|`SBC`|`sbc rd, rr`|`rd -= rr - C`|ALL||
+|`SUBI`|`subi rd, k`|`rd -= k`|16-31||
+|`SBCI`|`sbci rd, k`|`rd -= k - C`|16-31||
+|`SBIW`|`sbiw rd, k`|`rd -= k`|24,26,28,30|even registers|
+|`MUL`|`mul rd, rr`|`r1:0 = rd * rr`|ALL|unsigned|
+|`MULS`|`muls rd, rr`|`r1:0 = rd * rr`|16-31|signed|
+|`LSL`|`lsl rd`|`rd <<= 1`|ALL|unsigned, no rotation|
+|`LSR`|`lsr rd`|`rd >>= 1`|ALL|unsigned, no rotation|
+|`ROL`|`rol rd`|`rd <<= 1`|ALL|unsigned, rotation|
+|`ROR`|`ror rd`|`rd >>= 1`|ALL|unsigned, rotation|
+|`ARS`|`asr rd`|`rd >>= 1`|ALL|signed, no rotation|
+|CP|`cp rd, rr`|`rd - rr`|ALL||
+|CPC|`cpc rd, rr`|`rd - rr - C`|ALL||
+|CPI|`cpi rd, k`|`rd - k`|ALL||
+|BREQ|`breq label`||||
+|BRNE|`brne label`||||
+|BRGE|`brge label`|||signed|
+|BRSH|`brsh label`|||unsigned
+|BRLT|`brlt label`|||signed|
+|BRLO|`brlo label`|||unsigned|
+|MOV|`mov rd, rr`|`rd = rr`|ALL||
+|MOVW|`movw rd, rr`|`rd+1:rd = rr+1:rr`|ALL|even registers|
+|LDI|`ldi rd, k`|`rd = k`|16-31||
+|LD|`ld rd, -(XYZ)+`|`rd = --*(XYZ)++`|X,Y,Z|pre-dec, none, post-inc|
+|ST|`st -(XYZ)+, rr`|`--*(XYZ)++ = rr`|X,Y,Z|pre-dec, none, post-inc|

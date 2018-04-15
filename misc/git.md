@@ -1,12 +1,14 @@
 # Git
 
 + [.gitignore](#git-gitignore)
-+ [status](#git-status)
-+ [add](#git-add)
-+ [commit](#git-commit)
-+ [remote](#git-remote)
-+ [push](#git-push)
-+ [pull](#git-pull)
++ [`status`](#git-status)
++ [`add`](#git-add)
++ [`commit`](#git-commit)
++ [`remote`](#git-remote)
++ [`push`](#git-push)
++ [`pull`](#git-pull)
+
+___
 
 ## <a id="git-gitignore"></a> .gitignore
 
