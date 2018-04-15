@@ -108,17 +108,17 @@ Some common instructions used in my class (instructions are not case-sensitive).
 |`ROL`|`rol rd`|`rd <<= 1`|ALL|unsigned, rotation|
 |`ROR`|`ror rd`|`rd >>= 1`|ALL|unsigned, rotation|
 |`ARS`|`asr rd`|`rd >>= 1`|ALL|signed, no rotation|
-|CP|`cp rd, rr`|`rd - rr`|ALL||
-|CPC|`cpc rd, rr`|`rd - rr - C`|ALL||
-|CPI|`cpi rd, k`|`rd - k`|ALL||
-|BREQ|`breq label`||||
-|BRNE|`brne label`||||
-|BRGE|`brge label`|||signed|
-|BRSH|`brsh label`|||unsigned
-|BRLT|`brlt label`|||signed|
-|BRLO|`brlo label`|||unsigned|
-|MOV|`mov rd, rr`|`rd = rr`|ALL||
-|MOVW|`movw rd, rr`|`rd+1:rd = rr+1:rr`|ALL|even registers|
-|LDI|`ldi rd, k`|`rd = k`|16-31||
-|LD|`ld rd, -(XYZ)+`|`rd = --*(XYZ)++`|X,Y,Z|pre-dec, none, post-inc|
-|ST|`st -(XYZ)+, rr`|`--*(XYZ)++ = rr`|X,Y,Z|pre-dec, none, post-inc|
+|`CP`|`cp rd, rr`|`rd - rr`|ALL||
+|`CPC`|`cpc rd, rr`|`rd - rr - C`|ALL||
+|`CPI`|`cpi rd, k`|`rd - k`|ALL||
+|`BREQ`|`breq label`||||
+|`BRNE`|`brne label`||||
+|`BRGE`|`brge label`|||signed|
+|`BRSH`|`brsh label`|||unsigned
+|`BRLT`|`brlt label`|||signed|
+|`BRLO`|`brlo label`|||unsigned|
+|`MOV`|`mov rd, rr`|`rd = rr`|ALL||
+|`MOVW`|`movw rd, rr`|`rd+1:rd = rr+1:rr`|ALL|even registers|
+|`LDI`|`ldi rd, k`|`rd = k`|16-31||
+|`LD`|`ld rd, -(XYZ)+`|`rd = --*(XYZ)++`|X,Y,Z|pre-dec, none, post-inc|
+|`ST`|`st -(XYZ)+, rr`|`--*(XYZ)++ = rr`|X,Y,Z|pre-dec, none, post-inc|
