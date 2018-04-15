@@ -1332,6 +1332,35 @@ There isn't anything unique or special to recursion in C. But there are some pro
 	   tail_recurse(int) */
 	```
 
+## <a id="linked-lists"></a> Linked Lists
+
+Linked lists can get a bit trickier in C. Because they're variable in size, we have to rely on pointers and memory allocation. Creating nodes isn't terribly difficult so long as you properly allocate memory and change the fields in the node struct.
+
+Removing a single node requires a bit more effort on your side. You need to have a previous and current node pair. The current node is the one you want to remove, where the previous node is the node that links to the current node. Before removing current, make sure you set previous' next link to current's next, and then remove current. When removing current, you need to:
+
++ Null the node's next link
++ Free all the data associated with the node
++ Free the node itself
+
+As for doubly linked lists, make sure you update the links properly for the next and previous links.
+
+Clearing a list is where it can get annoying. Recursively clearing the list isn't a bad idea, but it's how we get rid of the nodes is the complication. We need to make sure we free them as we remove them, but you also can't free nodes that you're going to need after you bubble up your recursion. Here's the trick:
+
++ Recurse towards the end of the list
++ Null the node's next link
++ Free all the data associated with the node
++ Free the node itself
++ Bubble back up
+
+That's with singly linked lists though. Doubly linked lists require a bit more work. We can start with either side of the list since it's doubly linked, but let's stick with recursing to the end:
+
++ Null both the node's next and previous links
++ Free the data associated with the node
++ Free the node itself
++ Bubble back up
+
+Make sure you null any "head" or "tail" variables you have in your linked list struct.
+
 ## <a id="avr"></a> AVR Assembly
 
 ### <a id="avr-registers"></a> Registers
@@ -1398,35 +1427,6 @@ There isn't anything unique or special to recursion in C. But there are some pro
 + Make sure you write your base cases properly
 	+ There's no less than or equal to, there's only less than
 	+ No greater than, only greater than or equal to
-
-## <a id="linked-lists"></a> Linked Lists
-
-Linked lists can get a bit trickier in C. Because they're variable in size, we have to rely on pointers and memory allocation. Creating nodes isn't terribly difficult so long as you properly allocate memory and change the fields in the node struct.
-
-Removing a single node requires a bit more effort on your side. You need to have a previous and current node pair. The current node is the one you want to remove, where the previous node is the node that links to the current node. Before removing current, make sure you set previous' next link to current's next, and then remove current. When removing current, you need to:
-
-+ Null the node's next link
-+ Free all the data associated with the node
-+ Free the node itself
-
-As for doubly linked lists, make sure you update the links properly for the next and previous links.
-
-Clearing a list is where it can get annoying. Recursively clearing the list isn't a bad idea, but it's how we get rid of the nodes is the complication. We need to make sure we free them as we remove them, but you also can't free nodes that you're going to need after you bubble up your recursion. Here's the trick:
-
-+ Recurse towards the end of the list
-+ Null the node's next link
-+ Free all the data associated with the node
-+ Free the node itself
-+ Bubble back up
-
-That's with singly linked lists though. Doubly linked lists require a bit more work. We can start with either side of the list since it's doubly linked, but let's stick with recursing to the end:
-
-+ Null both the node's next and previous links
-+ Free the data associated with the node
-+ Free the node itself
-+ Bubble back up
-
-Make sure you null any "head" or "tail" variables you have in your linked list struct.
 
 ### <a id="avr-instructions"></a> Instructions
 
