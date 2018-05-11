@@ -1492,7 +1492,7 @@ Tips:
 
 ## <a id="endian"></a> Big Endian vs. Little Endian
 
-The difference is what pattern the bytes are stored in memory. **Big Endian (BE)** means that the **most significant byte (MSB)** is stored first. **Little Endian (LE)** is the opposite: when the **least significant byte (LSB)** is stored first. Say we want to represent `1234` in hex, which is `0x04D2` (we're storing this in 2 bytes). In BE, we would store `0x04` and then `0xD2`. In LE, we'd do the opposite. That's because the MSB in `1234` is `0x04`, and the LSB is `0xD2`.
+The difference is what pattern the bytes are stored in memory. **Big Endian (BE)** means that the **most significant byte (MSB)** is stored first. **Little Endian (LE)** is the opposite: when the **least significant byte (LSB)** is stored first. Say we want to represent `1234` in hex, which is `0x04D2` (we're storing this in 2 bytes). In BE, we would store `0xD2` and then `0x04`, resulting in `0x04D2` (just like we would read it in real life). In LE, we'd do the opposite. That's because the MSB in `1234` is `0x04`, and the LSB is `0xD2`, if we were to read the memory in order we'd get `0xD204`.
 
 ## <a id="bitwiseops"></a> Bitwise Operators
 
