@@ -10,3 +10,6 @@
 2. [AI Shack - Utkarsh Sinha](http://aishack.in/tutorials/sift-scale-invariant-feature-transform-introduction/) - conceptual understanding, with some math thrown in.
 3. [Weitz](http://weitz.de/sift/) - visual and interactive demonstration of SIFT (no math)
 4. [David Lowe](https://people.eecs.berkeley.edu/~malik/cs294/lowe-ijcv04.pdf) - Research Paper on SIFT algorithm
+
+## Hough Transform
+1. [AI Shack - Utkarsh Sinha](http://aishack.in/tutorials/hough-transform-basics/)
