@@ -1,6 +1,7 @@
 # Computer Vision Resources
 
-## Harris Corner Detection
+## Harris Corner Detection (HCD)
+Yes, Shi-Tomasi Corner Detection is an improvement on HCD. Better to first learn the intution behind HCD first, then work towards understanding/using Shi-Tomasi.
 1. [Medium - Nisha Gandhi](https://medium.com/pixel-wise/detect-those-corners-aba0f034078b) - good basic, conceptual introduction with some math (though link 2 explains the math better)
 2. [AI Shack - Utkarsh Sinha](http://aishack.in/tutorials/harris-corner-detector/) - more in-depth explanation of how HCD works; links in that series are also useful further readings (i.e. what feature points are)
 
