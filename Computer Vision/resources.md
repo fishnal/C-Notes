@@ -1,5 +1,9 @@
 # Computer Vision Resources
 
+## Harris Corner Detection
+1. [Medium - Nisha Gandhi](https://medium.com/pixel-wise/detect-those-corners-aba0f034078b) - good basic, conceptual introduction with some math (though link 2 explains the math better)
+2. [AI Shack - Utkarsh Sinha](http://aishack.in/tutorials/harris-corner-detector/) - more in-depth explanation of how HCD works; links in that series are also useful further readings (i.e. what feature points are)
+
 ## Histogram Equalization
 1. [Towards Data Science - Shreenidhi Sudhakar](https://towardsdatascience.com/histogram-equalization-5d1013626e64) - conceptual introduction
 2. [Medium - Animesh Karnewar](https://medium.com/@animeshsk3/back-to-basics-part-1-histogram-equalization-in-image-processing-f607f33c5d55) - conceptual and a bit of mathematical explanation 
